@@ -1,10 +1,79 @@
 <!DOCTYPE html>
-<html>
-<body>
 
-<p>The queryset object:</p>
+<html lang="en">
+    <head>
+        <title>LockWizards.com</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Lock Wizards Homepage">
+        
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-{{ myMembers }}
+        <link rel="stylesheet" href="styles/index.css">
+    </head>
+    <body>
+        <header>
+            <a href="index.html">
+                <img class="header-logo" src="pictures/logo/Lock_Wizards_png.png" alt="Lock Wizards Logo">
+            </a>
+        </header>
+        <main>
+            <div class="statement-box">
+                <p>Preserving building history through minimally invasive access control.</p>
+            </div>
+            <div class="statement-photo-box">
+                <img class="statement-photo" src="pictures/backgrounds/Fermier.jpg" alt="Fermier Hall at TAMU">
+                <img class="statement-photo" src="pictures/backgrounds/HEB.jpg" alt="HEB at TAMU">
+            </div>
+            <div class="reserve-photo-box">
+                <img class="reserve-photo" src="pictures/backgrounds/RT-709.jpg" alt="Conference Room in Rudder Tower">
+            </div>
+            <div class="reserve-box">
+                <p class="res-header-text">Reserve a room</p>
+                <p class="res-paragraph-text">Make a reservation for a study or conference room where our systems are used.</p>
+                <form class="reserve-form" action="index.html">
+                    <button class="reserve-button" type="submit">Reserve</button>
+                </form>
+            </div>
+            <div class="contact-info">
+                <p>Contact us:</p>
+                <div class="address">
+                    <p>Fermier Hall, 106 Ross St. College Station, TX 77843-3367</p>
+                </div>
+            </div>
+            <div class="follow-info">
+                <p>Follow us:</p>
+                <a href="https://www.facebook.com/"> <!--Change this value!!!-->
+                    <img class="icons" src="pictures/icons/fb.png" alt="Facebook Icon">
+                </a>
+                <a href="https://www.instagram.com/"> <!--Change this value!!!-->
+                    <img class="icons" src="pictures/icons/instagram.png" alt="Instagram Icon">
+                </a>
+                <a href="https://www.youtube.com/"> <!--Change this value!!!-->
+                    <img class="icons" src="pictures/icons/youtube.png" alt="Youtube Icon">
+                </a>
+            </div>
+        </main>
+        <script>
+            let index = 0;
+            slideShow();
 
-</body>
+            function slideShow() {
+                const images = document.getElementsByClassName("statement-photo");
+
+                for (let i = 0; i < images.length; i++)
+                    images[i].style.display = "none";
+                
+                index++;
+                if (index > images.length)
+                    index = 1;
+                
+                images[index-1].style.display = "inline";
+
+                setTimeout(slideShow, 10000);
+            }
+        </script>
+    </body>
 </html>

@@ -1,0 +1,154 @@
+/* General styling*/
+/*---------------*/
+* {
+    --palette-color-1: white;
+    --palette-color-2: #7ED957;
+    --palette-color-3: black;
+
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    color: var(--palette-color-1);
+    background-color: #EFEFEF;
+    font: 400 16px/20px Poppins, Arial;
+}
+
+body {
+    margin: 0 auto;
+    max-width: 1600px;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    background-color: var(--palette-color-1);
+}
+
+
+
+/* Header styling*/
+/*---------------*/
+header {
+    display: flex;
+    flex-direction: row;
+
+    max-width: inherit;
+    width: 100%;
+    height: 90px;
+    padding: 0 50px;
+
+    position: fixed;
+    top: 0;
+
+    background-color: var(--palette-color-1);
+    box-shadow: 
+        0px 0px 3px rgba(0, 0, 0, 0.2),
+        0px 0px 3px rgba(0, 0, 0, 0.2) inset;
+}
+
+.left-header-section {
+    display: flex;
+    flex: 1;
+}
+
+.header-logo {
+    position: absolute;
+    height: 80px;
+    object-fit: contain;
+    top: 5px;
+}
+
+.header-logo:hover {cursor: pointer;}
+
+
+
+/* Form styling*/
+/*-------------*/
+main {
+    margin-top: 190px;
+    height: 1000px;
+
+    display: flex;
+    flex-direction: column;
+    max-width: 750px;
+    width: 100%;
+
+    background-color: white;
+}
+
+.new-grids {
+    height: inherit;
+    display: grid;
+    grid-template-columns: 20% 80%;
+    grid-template-rows: 2% 25%;
+    grid-template-areas:
+        "graphic-block1 graphic-block2"
+        "info-box info-box";
+}
+
+.graphic-block1 {
+    background-color: var(--palette-color-2);
+    grid-area: graphic-block1;
+}
+
+.graphic-block2 {
+    background-color: #E1E1E1;
+    grid-area: graphic-block2;
+}
+
+.info-box {
+    background-color: rgba(126, 217, 87, 0.6);
+    grid-area: info-box;
+}
+
+.message-header {
+    margin: 20px 0px 15px 2%;
+    color: var(--palette-color-3);
+    font: 600 30px/45px Poppins, Arial;
+}
+
+.message {
+    margin: 0 10% 40px 10%;
+    color: var(--palette-color-3);
+    font: 500 16px/20px Poppins, Arial;
+}
+
+.return-link {
+    color: #3366CC;
+    margin: 0 45% 0 45%;
+    text-decoration: underline;
+}
+
+
+
+/* Media query styling*/
+/*--------------------*/
+@media all and (max-width: 1024px) {
+    header {height: 60px;}
+
+    .header-logo {height: 50px;}
+}
+
+@media all and (max-width: 768px) {
+    .message-header {
+        margin: 20px 0px 15px 2%;
+        color: var(--palette-color-3);
+        font: 600 25px/35px Poppins, Arial;
+    }
+    
+    .message {
+        margin: 0 10% 40px 10%;
+        color: var(--palette-color-3);
+        font: 500 14px/18px Poppins, Arial;
+    }
+    
+    .return-link {
+        color: #3366CC;
+        margin: 0 45% 0 45%;
+        text-decoration: underline;
+    }
+}

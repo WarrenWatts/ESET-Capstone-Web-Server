@@ -7,6 +7,11 @@ import json
 
 # Create your views here.
 
+def mainPage(request):
+    template = loader.get_template("reserves/index.html") 
+    
+    return HttpResponse(template.render(request))
+
 def loadForm(request):
     dateDict = dict() # Dictionary to hold dates and their start/end times
     numDays = 7 # Number of calendar dates to search
@@ -20,6 +25,6 @@ def loadForm(request):
 
     dateJSON = json.dumps(dateDict) # Format the dateDict into JSON
     context = {'myMembers' : dateDict} # The data given by Django to HTML must be in dictionary form
-    template = loader.get_template("reserves/index.html") 
+    template = loader.get_template("reserves/forms/form.html") 
     
     return HttpResponse(template.render(context, request))

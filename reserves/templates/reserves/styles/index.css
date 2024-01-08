@@ -1,0 +1,301 @@
+/* General styling*/
+/*---------------*/
+:root {
+    color: var(--palette-color-1);
+    background-color: #EFEFEF;
+    font: 400 16px/20px Poppins, Arial;
+    -webkit-text-size-adjust: 100%;
+}
+
+* {
+    --palette-color-1: white;
+    --palette-color-2: #7ED957;
+    --palette-color-3: black;
+    --footer-text-style:
+                        400 
+                        clamp(0.625rem, 0.58rem + 0.227vw, 1.125rem)
+                        /clamp(0.875rem, 0.841rem + 0.17vw, 1.25rem)
+                        Poppins, Arial;
+
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0 auto;
+    max-width: 80%;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    background-color: var(--palette-color-1);
+}
+
+a {text-decoration: none;}
+
+
+
+/* Header styling*/
+/*---------------*/
+header {
+    z-index: 10;
+    display: flex;
+
+    max-width: inherit;
+    width: inherit;
+    height: 90px;
+    padding: 0 clamp(1.25rem, -0.089rem + 3.571vw, 3.125rem);
+
+    position: fixed;
+    top: 0px;
+
+    background-color: var(--palette-color-1);
+    box-shadow: 
+        0px 0px 3px rgba(0, 0, 0, 0.2),
+        0px 0px 3px rgba(0, 0, 0, 0.2) inset;
+}
+
+.header-logo {
+    z-index: 11;
+    position: absolute;
+    object-fit: contain;
+    height: 80px;
+    top: 5px;
+}
+
+.header-logo:hover {cursor: pointer;}
+
+
+
+/* First row styling*/
+/*------------------*/
+main {
+    margin-top: 90px;
+    min-height: 1250px;
+
+    display: grid;
+    grid-template-columns: 37.5% 62.5%;
+    grid-template-rows: 40% 48% 12%;
+    grid-template-areas: 
+        "statement-box statement-photo-box"
+        "reserve-photo-box reserve-box"
+        "contact-info follow-info";
+}
+
+.statement-box {
+    z-index: 2;
+    display: grid;
+    align-items: center;
+    grid-area: statement-box;
+    padding: 0 8.3% 0 8.3%;
+    font:
+        600 
+        clamp(1.563rem, 1.25rem + 1.563vw, 5rem)
+        /clamp(1.875rem, 1.477rem + 1.989vw, 6.25rem)
+        Poppins, Arial;
+
+    background-color: var(--palette-color-2);
+    border-right: 6px solid var(--palette-color-3);
+}
+
+.statement-photo-box {grid-area: statement-photo-box;}
+
+.statement-photo {
+    display: none;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: bottom;
+    animation: slide-in 1000ms;
+}
+
+@keyframes slide-in {
+    from {
+      transform: translateX(-10%);
+      opacity: 0.25;
+    }
+    to {
+      transform: translateX(0%);
+      opacity: 1;
+    }
+}
+
+
+
+/* Second row styling*/
+/*-------------------*/
+.reserve-photo-box {
+    display: grid;
+    align-items: center;
+    grid-area: reserve-photo-box;
+    padding: 25.5% 40px 25.5% 20px;
+}
+
+.reserve-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: right;
+    border-radius: 5px;
+}
+
+.reserve-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    grid-area: reserve-box;
+    
+    color: var(--palette-color-3);
+}
+
+.res-header-text {
+    padding: 0 0 0 10%;
+    font: 
+        600 
+        clamp(1.563rem, 1.307rem + 1.278vw, 4.375rem)
+        /clamp(1.875rem, 1.648rem + 1.136vw, 4.375rem)
+        Poppins, Arial;
+}
+
+.res-paragraph-text {
+    font: 
+        400 
+        clamp(0.75rem, 0.676rem + 0.369vw, 1.563rem)
+        /clamp(1rem, 0.92rem + 0.398vw, 1.875rem) 
+        Poppins, Arial;
+
+    margin-right: 10%;
+    padding: 0.5% 10% 0 10%;
+}
+
+.reserve-form {padding: 15px 0 0 9%;}
+
+.reserve-button {
+    width: clamp(7.5rem, 7.045rem + 2.273vw, 12.5rem);
+    height: clamp(3rem, 2.818rem + 0.909vw, 5rem);
+    
+    font: 
+        500 
+        clamp(1rem, 0.949rem + 0.256vw, 1.563rem)
+        /20px 
+        Poppins, Arial;
+
+    color: var(--palette-color-1);
+    background-color: var(--palette-color-2);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+
+    border: none;
+    border-radius: 50px;
+    transition: 
+        background-color 0.1s,
+        box-shadow 0.1s;
+}
+
+.reserve-button:hover {
+    cursor: pointer;
+    background-color: #6cb94b;
+    box-shadow: none;
+}
+
+.reserve-button:active {background-color: #508937;}
+
+
+
+/* Footer styling*/
+/*---------------*/
+.contact-info,
+.follow-info {
+    font: 
+    500 
+    clamp(0.875rem, 0.807rem + 0.341vw, 1.625rem)
+    /20px
+    Poppins, Arial;
+    font-weight: 600;
+    padding: 25px 0px 0px 4.1%;
+    background-color: #7ED957;
+}
+
+.contact-info {grid-area: contact-info;}
+
+.follow-info {grid-area: follow-info;}
+
+.icons {
+    margin-top: 5px;
+    height: clamp(1.875rem, 1.619rem + 1.278vw, 4.688rem);
+    vertical-align: top;
+}
+
+.icons:hover {cursor: pointer;}
+
+
+.address::before {
+    content: "lockwizards2@gmail.com";
+    font: var(--footer-text-style);
+}
+
+.address {font: var(--footer-text-style);}
+
+
+
+/* Media query styling*/
+/*--------------------*/
+@media all and (max-width: 1024px) {
+
+    body {max-width: 100%;}
+
+    header {height: 60px;}
+
+    .header-logo {height: 50px;}
+
+    main {
+        margin-top: 60px;
+        min-height: 1300px;
+        grid-template-columns: 1fr;
+        grid-template-rows: 
+            140px
+            400px 
+            400px 
+            200px 
+            80px 
+            80px;
+        grid-template-areas: 
+            "statement-box" 
+            "statement-photo-box"
+            "reserve-photo-box" 
+            "reserve-box"
+            "contact-info"
+            "follow-info"; 
+    }
+
+    .statement-box {
+        border-right: none;
+        border-bottom: 6px solid var(--palette-color-3);
+    }
+
+    .reserve-photo-box {padding: 30px 15% 30px 15% ;}
+
+    .reserve-photo {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 80%;
+    }
+
+    .reserve-box {
+        margin-bottom: 5%;
+        padding: 0 0 0 10%;
+    }
+    
+    .res-paragraph-text {padding-right: 0;}
+
+    .contact-info {padding: 15px 0px 0px 4.1%;}
+    
+    .follow-info {padding: 0px 0px 0px 4.1%;}
+    
+    .icons {margin-top: 0px;}
+}
