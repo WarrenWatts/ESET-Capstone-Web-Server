@@ -1,10 +1,40 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <body>
+    <form>
+        <div>
+            <input type="text" placeholder="First" id="first">
+            <label for="first">Name: *</label> 
+        </div>
+        <div>
+            <input type="text" placeholder="Last">
+        </div>
+        <div>
+            <input type="email" id="email">
+            <label for="email">Email: *</label>
+        </div>
+        <div>
+            <input type="date" id="calendardate">
+            <label for="calendardate">Date: *</label>
+        </div>
+        <div>
+            <select id="starttime">
+                <option>Select</option>
+                <option>Bruh</option>
+            </select>
+            <label for="starttime">Start Time: *</label>
+        </div>
+        <div>
+            <select id="endtime">
+                <option>Select</option>
+                <option>Jeff</option>
+            </select>
+            <label for="endtime">Start Time: *</label>
+        </div>
+    </form>
 
-<p>The queryset object:</p>
-
-{{ myMembers }}
-
+    <script src="{% static 'scripts/form.js' %}" defer></script>
+    {{myMembers|json_script}}
 </body>
 </html>
