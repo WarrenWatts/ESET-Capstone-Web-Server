@@ -9,8 +9,8 @@ import json
 
 def mainPage(request):
     template = loader.get_template("reserves/index.html") 
-    
-    return HttpResponse(template.render(request))
+    context = dict()
+    return HttpResponse(template.render(context, request))
 
 def loadForm(request):
     dateDict = dict() # Dictionary to hold dates and their start/end times

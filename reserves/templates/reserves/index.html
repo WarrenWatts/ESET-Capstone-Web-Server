@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 
 <html lang="en">
@@ -11,12 +12,12 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-        <link rel="stylesheet" href="styles/index.css">
+        <link rel="stylesheet" href="{% static 'styles/index.css' %}">
     </head>
     <body>
         <header>
-            <a href="index.html">
-                <img class="header-logo" src="pictures/logo/Lock_Wizards_png.png" alt="Lock Wizards Logo">
+            <a href="{% url 'home' %}">
+                <img class="header-logo" src="{% static 'pictures/logo/Lock_Wizards_png.png' %}" alt="Lock Wizards Logo">
             </a>
         </header>
         <main>
@@ -24,16 +25,16 @@
                 <p>Preserving building history through minimally invasive access control.</p>
             </div>
             <div class="statement-photo-box">
-                <img class="statement-photo" src="pictures/backgrounds/Fermier.jpg" alt="Fermier Hall at TAMU">
-                <img class="statement-photo" src="pictures/backgrounds/HEB.jpg" alt="HEB at TAMU">
+                <img class="statement-photo" src="{% static 'pictures/backgrounds/Fermier.jpg' %}" alt="Fermier Hall at TAMU">
+                <img class="statement-photo" src="{% static 'pictures/backgrounds/HEB.jpg' %}" alt="HEB at TAMU">
             </div>
             <div class="reserve-photo-box">
-                <img class="reserve-photo" src="pictures/backgrounds/RT-709.jpg" alt="Conference Room in Rudder Tower">
+                <img class="reserve-photo" src="{% static 'pictures/backgrounds/RT-709.jpg' %}" alt="Conference Room in Rudder Tower">
             </div>
             <div class="reserve-box">
                 <p class="res-header-text">Reserve a room</p>
                 <p class="res-paragraph-text">Make a reservation for a study or conference room where our systems are used.</p>
-                <form class="reserve-form" action="index.html">
+                <form class="reserve-form" action="{% url 'form' %}" method="get">
                     <button class="reserve-button" type="submit">Reserve</button>
                 </form>
             </div>
@@ -46,13 +47,13 @@
             <div class="follow-info">
                 <p>Follow us:</p>
                 <a href="https://www.facebook.com/"> <!--Change this value!!!-->
-                    <img class="icons" src="pictures/icons/fb.png" alt="Facebook Icon">
+                    <img class="icons" src="{% static 'pictures/icons/fb.png' %}" alt="Facebook Icon">
                 </a>
                 <a href="https://www.instagram.com/"> <!--Change this value!!!-->
-                    <img class="icons" src="pictures/icons/instagram.png" alt="Instagram Icon">
+                    <img class="icons" src="{% static 'pictures/icons/instagram.png' %}" alt="Instagram Icon">
                 </a>
                 <a href="https://www.youtube.com/"> <!--Change this value!!!-->
-                    <img class="icons" src="pictures/icons/youtube.png" alt="Youtube Icon">
+                    <img class="icons" src="{% static 'pictures/icons/youtube.png' %}" alt="Youtube Icon">
                 </a>
             </div>
         </main>
