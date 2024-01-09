@@ -15,26 +15,27 @@
             <label for="email">Email: *</label>
         </div>
         <div>
-            <input type="date" id="calendardate">
+            <input type="date" id="calendardate" min="">
             <label for="calendardate">Date: *</label>
         </div>
         <div>
             <select id="starttime">
-                <option>Select</option>
-                <option>Bruh</option>
+                <option>Select a time</option>
             </select>
             <label for="starttime">Start Time: *</label>
         </div>
         <div>
             <select id="endtime">
-                <option>Select</option>
-                <option>Jeff</option>
+                <option>Select a time</option>
             </select>
-            <label for="endtime">Start Time: *</label>
+            <label for="endtime">End Time: *</label>
         </div>
     </form>
 
-    <script src="{% static 'scripts/form.js' %}" defer></script>
+    <script src="{% static 'scripts/form.js' %}" 
+        defer
+        data-base-date="{{baseDate}}"
+        data-last-date="{{lastDate}}"></script>
     {{myMembers|json_script}}
 </body>
 </html>
