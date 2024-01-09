@@ -3,33 +3,36 @@ const dataFromDB = JSON.parse(
     nextElementSibling.textContent
 );
 
-const data = document.currentScript.dataset;
-const attr = {"min": data.baseDate, "max": data.lastDate};
-
 
 
 window.onload = function() {
-    let dateSel = document.getElementById("calendardate");
+    let dateSel = "";
     let startSel = document.getElementById("starttime");
     let endSel = document.getElementById("endtime");
 
-    for(const key in attr)
-        dateSel.setAttribute(key, attr[key]);
-
-    dateSel.onchange = function() {
-        startSel.length = 1;
-        endSel.length = 1;
-        for(let start in dataFromDB[this.value])
-            startSel.options[startSel.options.length] = new Option(timeDisplayed(start), start);
-    }
+        $("#datePicker").datepicker({
+            dateFormat: 'yy-mm-dd',
+            defaultDate: '0d',
+            minDate: '0d',
+            maxDate: '6d' ,
+            onSelect: function() {
+                startSel.length = 1;
+                endSel.length = 1;
+                dateSel = this.value;
+                for(let start in dataFromDB[this.value])
+                    startSel.options[startSel.options.length] = new Option(timeDisplayed(start), start);
+            }
+        });
 
     startSel.onchange = function() {
         endSel.length = 1;
-        let endTime = dataFromDB[dateSel.value][this.value];
+        let endTime = dataFromDB[dateSel][this.value];
         for(let i = 0; i < endTime.length; i++)
             endSel.options[endSel.options.length] = new Option(timeDisplayed(endTime[i]), endTime[i]);
     }
 }
+
+
 
 function timeDisplayed(theTime){
     const theDate = new Date(parseInt(theTime) * 1000);

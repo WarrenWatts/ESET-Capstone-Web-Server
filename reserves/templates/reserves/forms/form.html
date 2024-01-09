@@ -1,5 +1,13 @@
 {% load static %}
 <!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.min.css' %}">
+    <link rel="stylesheet" href="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.structure.min.css' %}">
+    <link rel="stylesheet" href="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.theme.min.css' %}">
+
+    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
+</head>
 <html>
 <body>
     <form>
@@ -15,8 +23,8 @@
             <label for="email">Email: *</label>
         </div>
         <div>
-            <input type="date" id="calendardate" min="">
-            <label for="calendardate">Date: *</label>
+            <input type="text" id="datePicker">
+            <label for="datePicker">Date: *</label>
         </div>
         <div>
             <select id="starttime">
@@ -30,12 +38,9 @@
             </select>
             <label for="endtime">End Time: *</label>
         </div>
+        <label id='dt'></label>
     </form>
-
-    <script src="{% static 'scripts/form.js' %}" 
-        defer
-        data-base-date="{{baseDate}}"
-        data-last-date="{{lastDate}}"></script>
+    <script src="{% static 'scripts/form.js' %}" defer></script>
     {{myMembers|json_script}}
 </body>
 </html>
