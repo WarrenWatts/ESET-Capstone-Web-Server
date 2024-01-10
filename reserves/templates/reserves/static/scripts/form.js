@@ -12,7 +12,6 @@ window.onload = function() {
 
         $("#datePicker").datepicker({
             dateFormat: 'yy-mm-dd',
-            defaultDate: '0d',
             minDate: '0d',
             maxDate: '6d' ,
             onSelect: function() {
