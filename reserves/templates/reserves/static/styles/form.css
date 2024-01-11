@@ -1,1 +1,58 @@
 .ui-datepicker {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Poppins, sans-serif;
+  }
+  
+  
+  .hero{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .input-group {
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    margin-bottom: 50px;
+  }
+  
+  #emailField, #firstField, #lastField{
+    display: block;
+    width: 100%;
+    border: 0;
+    border-bottom: 2px solid #555;
+    background: transparent;
+    outline: none;
+    font-size: 26px;
+    padding: 5px 2px;
+    position: relative;
+    z-index: 10;
+  }
+
+  #emailLabel{
+    display: block;
+    position: absolute;
+    bottom: 5px;
+    left: 2px;
+    color: #777;
+    font-size: 18px;
+  }
+
+  #emailError, #firstError, #lastError,
+  #datePickError, #startTimeError, #endTimeError{
+    position: absolute;
+    top: 100%;
+    left: 2px;
+    font-size: 16px;
+    font-weight: 400;
+    color: red;
+  }
