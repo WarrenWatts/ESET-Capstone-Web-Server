@@ -2,7 +2,10 @@ from django.shortcuts import render
 from django.template import loader
 from django.http import HttpResponse
 from .available import AvailabileTime
-import datetime, time
+from .forms import ReservesForm
+from .models import Reserves
+from secrets import SystemRandom
+import datetime
 import json
 
 # Create your views here.
@@ -28,3 +31,24 @@ def loadForm(request):
     template = loader.get_template("reserves/forms/form.html") 
     
     return HttpResponse(template.render(context, request))
+
+
+def checkSubmit(request):
+    accessGenerator = SystemRandom()
+    codeValue = accessGenerator.randint(1000000, 9999999)
+
+    if request.method == "POST":
+        updated_request = request.POST.copy()
+        updated_request.update({"accessCode": codeValue})
+        print(updated_request)
+        form = ReservesForm(updated_request)
+        
+        if form.is_valid():
+            code = form.save(commit=False)
+            code.accessCode = codeValue
+            form.save()
+        else:
+            print(form.errors)
+
+
+    

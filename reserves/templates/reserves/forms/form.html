@@ -1,63 +1,64 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Lock Wizards Form Page">
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Lock Wizards Form Page">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.min.css' %}">
-    <link rel="stylesheet" href="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.structure.min.css' %}">
-    <link rel="stylesheet" href="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.theme.min.css' %}">
-    <link rel="stylesheet" href="{% static 'styles/form.css'%}">
+        <link rel="stylesheet" href="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.min.css' %}">
+        <link rel="stylesheet" href="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.structure.min.css' %}">
+        <link rel="stylesheet" href="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.theme.min.css' %}">
+        <link rel="stylesheet" href="{% static 'styles/form.css'%}">
 
-    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
-    <script src="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
-</head>
-<body>
-    <form novalidate class="hero">
-        <div class="input-group">
-            <label id="emailLabel">Email</label>
-            <input type="email" id="emailField" pattern="[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$" 
-                    maxlength="62" required>
-            <span id="emailError"></span>
-        </div>
-        <div class="input-group">
-            <label id="firstNameLabel">First Name</label>
-            <input type="text" id="firstField" pattern="[A-za-z]{1,50}" maxlength="50" required>
-            <span id="firstError"></span>
-        </div>
-        <div class="input-group">
-            <label id="lastNameLabel">Last Name</label>
-            <input type="text" id="lastField" pattern="[A-za-z]{1,50}" maxlength="50" required>
-            <span id="lastError"></span>
-        </div>
-        <div class="input-group">
-            <input type="text" id="datePicker" required> 
-            <label for="datePicker">Date: *</label>
-            <span id="datePickError"></span>
-        </div>
-        <div class="input-group">
-            <select id="starttime" required>
-                <option>Select a time</option>
-            </select>
-            <label for="starttime">Start Time: *</label>
-            <span id="startTimeError"></span>
-        </div>
-        <div class="input-group">
-            <select id="endtime" required>
-                <option>Select a time</option>
-            </select>
-            <label for="endtime">End Time: *</label>
-            <span id="endTimeError"></span>
-        </div>
-        <button>Submit</button>
-    </form>
-    <script src="{% static 'scripts/form.js' %}" defer></script>
-    {{myMembers|json_script}}
-</body>
+        <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+        <script src="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
+    </head>
+    <body>
+        <form novalidate class="hero" method="post" action="{% url 'submit' %}">
+            {% csrf_token %}
+            <div class="input-group">
+                <label id="firstNameLabel">First Name</label>
+                <input type="text" id="firstField" name="firstName" pattern="[A-za-z]{1,50}" maxlength="50" required>
+                <span id="firstError"></span>
+            </div>
+            <div class="input-group">
+                <label id="lastNameLabel">Last Name</label>
+                <input type="text" id="lastField" name="lastName" pattern="[A-za-z]{1,50}" maxlength="50" required>
+                <span id="lastError"></span>
+            </div>
+            <div class="input-group">
+                <label id="emailLabel">Email</label>
+                <input type="email" id="emailField" name="email" pattern="[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$" 
+                        maxlength="62" required>
+                <span id="emailError"></span>
+            </div>
+            <div class="input-group">
+                <input type="text" id="datePicker" name="date" required> 
+                <label for="datePicker">Date: *</label>
+                <span id="datePickError"></span>
+            </div>
+            <div class="input-group">
+                <select id="starttime" name="unixStartTime" required>
+                    <option>Select a time</option>
+                </select>
+                <label for="starttime">Start Time: *</label>
+                <span id="startTimeError"></span>
+            </div>
+            <div class="input-group">
+                <select id="endtime" name="unixEndTime" required>
+                    <option>Select a time</option>
+                </select>
+                <label for="endtime">End Time: *</label>
+                <span id="endTimeError"></span>
+            </div>
+            <button>Submit</button>
+        </form>
+        <script src="{% static 'scripts/form.js' %}" defer></script>
+        {{myMembers|json_script}}
+    </body>
 </html>
