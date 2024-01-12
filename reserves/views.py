@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render
 from django.template import loader
 from django.http import HttpResponse
@@ -15,7 +16,9 @@ def mainPage(request):
     context = dict()
     return HttpResponse(template.render(context, request))
 
-def loadForm(request):
+
+
+def loadForm(request, msgString=""):
     dateDict = dict() # Dictionary to hold dates and their start/end times
     numDays = 7 # Number of calendar dates to search
     today = datetime.datetime.now()
@@ -29,13 +32,16 @@ def loadForm(request):
     dateJSON = json.dumps(dateDict) # Format the dateDict into JSON
     context = {'myMembers' : dateDict} # The data given by Django to HTML must be in dictionary form
     template = loader.get_template("reserves/forms/form.html") 
-    
+    if msgString:
+        messages.add_message(request, messages.ERROR, msgString)
     return HttpResponse(template.render(context, request))
+
 
 
 def checkSubmit(request):
     accessGenerator = SystemRandom()
     codeValue = accessGenerator.randint(1000000, 9999999)
+    context = {}
 
     if request.method == "POST":
         updated_request = request.POST.copy()
@@ -44,11 +50,19 @@ def checkSubmit(request):
         form = ReservesForm(updated_request)
         
         if form.is_valid():
-            code = form.save(commit=False)
-            code.accessCode = codeValue
             form.save()
+
+            template = loader.get_template("reserves/forms/form_submit.html")
+            return HttpResponse(template.render(context, request))
         else:
-            print(form.errors)
+            for _, errors in form.errors.items():
+                listNew = list(errors)
+            return loadForm(request, listNew[0])
+
+    
+    else:
+        pass # TODO...
+            
 
 
     
