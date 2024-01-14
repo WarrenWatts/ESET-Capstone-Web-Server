@@ -19,13 +19,13 @@
         <script src="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
     </head>
     <body>
-        {% if message %}
-            {% for message in messages %}
-            <h1 class="testHeader">{{ message }}</h1>
-            {% endfor %}
-        {% endif %}
         <form novalidate class="hero" method="post" action="{% url 'submit' %}">
             {% csrf_token %}
+            <div class="input-group">
+                {% if myMessage %}
+                    <h1 class="testHeader">{{ myMessage }}</h1>
+                {% endif %}
+            </div>
             <div class="input-group">
                 <label id="firstNameLabel">First Name</label>
                 <input type="text" id="firstField" name="firstName" pattern="[A-za-z]{1,50}" maxlength="50" required>

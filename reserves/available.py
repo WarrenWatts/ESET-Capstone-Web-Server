@@ -1,28 +1,31 @@
+from logging.handlers import RotatingFileHandler
 from .models import Reserves
 from pathlib import Path
 import datetime, time
 import logging
 
-mainDir = Path.cwd()
 
+# Logging setup for available.py file
+mainDir = Path.cwd()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - [Line: %(lineno)d] - %(message)s')
-file_handler = logging.FileHandler(mainDir.joinpath('reserves/reservesLogFolder/available.log'))
+file_handler = RotatingFileHandler(mainDir.joinpath('reserves/reservesLogFolder/available.log'))
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
-
+# Constants
+THIRTY_MIN = 1800 # Thirty minutes in seconds (for Unix Time)
 
 class AvailabileTime():
     def __init__(self, newDatetime :datetime.datetime, now :datetime.datetime) -> None:
         self.date = newDatetime # The passed calendar in datetime value
-        self.thirtyMin = 1800 # Thirty minutes in seconds (for Unix Time)
         self.today = now # The current datetime value
         self.timeDict = dict() # The dictionary that will be the value for each key in dateDict    
         self.__setupFunction() # Function that handles the function calls to complete the timeDict
 
-    def __setupFunction(self):
+
+    def __setupFunction(self) -> None:
         logger.debug("Entering __setupFunction...")
         startHour = 6 # The default hour used to create the origTimeList (hours between 0-23)
         startCount = 0 # Since available times are in increments of 30 min, used to start at 30 min for the hour if needed
@@ -47,7 +50,7 @@ class AvailabileTime():
     
 
     # Creates a list of all thirty minute increment times from either the current time or 6:00am to 11:00pm
-    def __originalTimes(self, hourT, startCount):
+    def __originalTimes(self, hourT, startCount) -> list:
         logger.debug("Entering __originalTimes...")
         origTimeList = list() # The time list that will be returned
 
@@ -59,12 +62,12 @@ class AvailabileTime():
                 minutesT = 30
             
             toUnixTime = datetime.datetime(
-                                            self.date.year,
-                                            self.date.month,
-                                            self.date.day,
-                                            hourT,
-                                            minutesT
-                                        )
+                                        self.date.year,
+                                        self.date.month,
+                                        self.date.day,
+                                        hourT,
+                                        minutesT,
+                                    )
             
             # Take the datetime value, change it to unix time, and append to the list.
             origTimeList.append(int(time.mktime(toUnixTime.timetuple())))
@@ -75,14 +78,15 @@ class AvailabileTime():
         return origTimeList
     
 
-    def __postDbTimes(self, startTimes = None, endTimes = None):
+    def __postDbTimes(self, startTimes = None, endTimes = None) -> list:
         logger.debug("Entering __postDbTimes...")
         # MySQL database query that only looks for the current date, and only takes in the start and end times for each row
-        myData = (Reserves.objects
-                  .filter(date=self.date)
-                  .filter(unixStartTime__gte=int(datetime.datetime.now().timestamp()))
-                  .values_list('unixStartTime', 'unixEndTime', named=True)
-                ) # Uses a named tuple
+        myData = (
+                Reserves.objects.
+                filter(date=self.date).
+                filter(unixStartTime__gte=int(datetime.datetime.now().timestamp())).
+                values_list('unixStartTime', 'unixEndTime', named=True)
+            ) # Uses a named tuple
 
         if myData: # Statement checks if anything was queried 
             for queryset in myData:
@@ -97,10 +101,11 @@ class AvailabileTime():
                     logger.error("Non-existent end time given.")
 
                 # for loop starts 30 minutes after start time, increments by 30, doesn't execute if start and stop are equal
-                for i in range(queryset.unixStartTime + self.thirtyMin, 
-                                queryset.unixEndTime, 
-                                self.thirtyMin
-                            ):
+                for i in range(
+                            queryset.unixStartTime + THIRTY_MIN, 
+                            queryset.unixEndTime, 
+                            THIRTY_MIN,
+                        ):
                     if i in startTimes:
                         startTimes.remove(i)
                     if i in endTimes:
@@ -108,15 +113,16 @@ class AvailabileTime():
 
         return [startTimes, endTimes] # Return nested lists
 
+
     # Returns the finalized dictionary
-    def __createDict(self, startTimes = None, endTimes = None):
+    def __createDict(self, startTimes = None, endTimes = None) -> dict:
         logger.debug("Entering __createDict...")
         unixTimes = {x : list() for x in startTimes} # Creates a dictionary with start times as keys and empty lists as values
         # Increment through each key in the list
         for key in unixTimes:
             incrementTime = key
             for i in range(4): # Can only be up to four possible end times per start time
-                incrementTime += self.thirtyMin
+                incrementTime += THIRTY_MIN
                 
                 # Break from loop to stop appending to list if incrementTime not found in endTime list
                 if incrementTime not in endTimes:
@@ -129,26 +135,37 @@ class AvailabileTime():
         
         return unixTimes
     
-    def __logOfDict(self):
+
+    def __logOfDict(self) -> None:
         logger.debug("Entering __logOfDict...")
         logger.info(self.getDate())
 
+        # Nested for loop that takes each key (start) time and its end times, and produces a human readable time for logging
         for key, value in self.timeDict.items():
             listForLog = list()
             keyTime = datetime.datetime.fromtimestamp(key)
             for i in value:
                 listValue = datetime.datetime.fromtimestamp(i)
-                listForLog.append("{}:{}".format(listValue.hour, listValue.minute))
+                
+                listForLog.append("{}:{}".format(
+                                                listValue.hour, 
+                                                30 if listValue.minute == 30 else "00",
+                                            )) # Statement to prevent minutes only showing a single zero
             
-            logger.info("{}:{} - {}".format(keyTime.hour, keyTime.minute, listForLog))
+            logger.info("{}:{} - {}".format(
+                                        keyTime.hour, 
+                                        30 if listValue.minute == 30 else "00", 
+                                        listForLog,
+                                    ))
             
 
     # Get calendar date of instance and return it as a string
-    def getDate(self):
+    def getDate(self) -> str:
         logger.debug("Getting calendar date...")
         return str(self.date)
-   
+    
+
     # Get the timeDict for the instance
-    def getDict(self):
+    def getDict(self) -> dict:
         logger.debug("Getting time dictionary...")
         return self.timeDict

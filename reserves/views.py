@@ -18,7 +18,7 @@ def mainPage(request):
 
 
 
-def loadForm(request, msgString=""):
+def loadForm(request, msgString = ""):
     dateDict = dict() # Dictionary to hold dates and their start/end times
     numDays = 7 # Number of calendar dates to search
     today = datetime.datetime.now()
@@ -26,14 +26,16 @@ def loadForm(request, msgString=""):
                 else today.date()) # If it's after the current day's last possible start time, set the first date to the next day
     
     for x in range(numDays): # Send each date to the AvailableTime class to fill the dateDict
-        available = AvailabileTime(baseDate + datetime.timedelta(days=x), today)
+        available = AvailabileTime(baseDate + datetime.timedelta(days = x), today)
         dateDict.update({available.getDate() : available.getDict()}) # The key of this dictionary is the calendar date, the value is another dictionary
     
     dateJSON = json.dumps(dateDict) # Format the dateDict into JSON
-    context = {'myMembers' : dateDict} # The data given by Django to HTML must be in dictionary form
-    template = loader.get_template("reserves/forms/form.html") 
-    if msgString:
-        messages.add_message(request, messages.ERROR, msgString)
+    context = {
+        'myMembers' : dateDict,
+        'myMessage' : msgString,
+    } # The data given by Django to HTML must be in dictionary form
+
+    template = loader.get_template("reserves/forms/form.html")
     return HttpResponse(template.render(context, request))
 
 
@@ -41,7 +43,7 @@ def loadForm(request, msgString=""):
 def checkSubmit(request):
     accessGenerator = SystemRandom()
     codeValue = accessGenerator.randint(1000000, 9999999)
-    context = {}
+    context = dict()
 
     if request.method == "POST":
         updated_request = request.POST.copy()
@@ -51,17 +53,19 @@ def checkSubmit(request):
         
         if form.is_valid():
             form.save()
-
             template = loader.get_template("reserves/forms/form_submit.html")
+
             return HttpResponse(template.render(context, request))
+        
         else:
+            print(form.errors)
             for _, errors in form.errors.items():
                 listNew = list(errors)
+            
             return loadForm(request, listNew[0])
 
-    
     else:
-        pass # TODO...
+        return loadForm(request, "Incorrect HTTP Request sent. Try again.")
             
 
 
