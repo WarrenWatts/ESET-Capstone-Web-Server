@@ -74,31 +74,27 @@ class AvailabileTime():
             
             # If minutesT is 30, then the next loop will be for the next hour
             hourT = hourT+1 if (minutesT == 30) else hourT
-
+        logger.debug("Original Time List: {}".format(origTimeList))
         return origTimeList
     
 
     def __postDbTimes(self, startTimes = None, endTimes = None) -> list:
         logger.debug("Entering __postDbTimes...")
         # MySQL database query that only looks for the current date, and only takes in the start and end times for each row
+        # NOTE: Implementation here isn't of the best quality, but unless more time is acquired near the end of the project, well...it works
         myData = (
                 Reserves.objects.
                 filter(date=self.date).
-                filter(unixStartTime__gte=int(datetime.datetime.now().timestamp())).
                 values_list('unixStartTime', 'unixEndTime', named=True)
             ) # Uses a named tuple
-
+        logger.debug("THIS IS myData: {}".format)
         if myData: # Statement checks if anything was queried 
             for queryset in myData:
                 if queryset.unixStartTime in startTimes: # If queried start time in startTimes list, remove it
                     startTimes.remove(queryset.unixStartTime)
-                else:
-                    logger.error("Non-existent start time given.")
                 
-                if queryset.unixEndTime in endTimes: # If queried end time in endTimes list, remove it
-                    endTimes.remove(queryset.unixEndTime)
-                else:
-                    logger.error("Non-existent end time given.")
+                if queryset.unixEndTime in endTimes:
+                    endTimes.remove(queryset.unixEndTime) # Since we know that the startTime is 
 
                 # for loop starts 30 minutes after start time, increments by 30, doesn't execute if start and stop are equal
                 for i in range(
@@ -108,9 +104,12 @@ class AvailabileTime():
                         ):
                     if i in startTimes:
                         startTimes.remove(i)
+                    
                     if i in endTimes:
                         endTimes.remove(i)
 
+        logger.debug("Start Times List: {}".format(startTimes))
+        logger.debug("End Times List: {}".format(endTimes))
         return [startTimes, endTimes] # Return nested lists
 
 
@@ -132,7 +131,7 @@ class AvailabileTime():
                 
                 # Append incrementTime to the key's list of end times
                 unixTimes[key].append(incrementTime)
-        
+                logger.debug("Unix Times dict: {}".format(unixTimes))
         return unixTimes
     
 
@@ -146,7 +145,7 @@ class AvailabileTime():
             keyTime = datetime.datetime.fromtimestamp(key)
             for i in value:
                 listValue = datetime.datetime.fromtimestamp(i)
-                
+            # TODO: Fix flawed logic here...
                 listForLog.append("{}:{}".format(
                                                 listValue.hour, 
                                                 30 if listValue.minute == 30 else "00",
