@@ -1,13 +1,25 @@
+# Imports for Emails
 from django.core.mail import EmailMultiAlternatives
-from email.mime.image import MIMEImage
 from django.template.loader import render_to_string
-from logging.handlers import RotatingFileHandler
 from django.utils.html import strip_tags
+from email.mime.image import MIMEImage
+
+# Imports for REST API
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
+from .serializer import ReservesSerializer
+from django.http.response import JsonResponse
+
+# Imports for General Django
 from .available import AvailabileTime
 from django.http import HttpResponse
 from django.template import loader
-from secrets import SystemRandom
 from .forms import ReservesForm
+from .models import Reserves
+
+# Other Imports
+from logging.handlers import RotatingFileHandler
+from secrets import SystemRandom
 from pathlib import Path
 import datetime
 import logging
@@ -17,6 +29,7 @@ import logging
 # Constants
 EMAIL_PNG = 'Lock_Wizards_png.png'
 IMG_FILE_PATH = 'reserves/templates/reserves/static/pictures/logo/Lock_Wizards_png.png'
+
 
 
 # Logging setup for views.py file
@@ -46,6 +59,36 @@ def readableTime(timeVal):
         extraZero = "0"
     
     return ("{}:{}{} {}".format(displayHour, extraZero, displayMin, hourPeriod))
+
+
+# TODO: Needs work...
+@csrf_exempt
+def reservesAPI(request):
+    if request.method == "POST":
+        reserves_data = JSONParser().parse(request)
+        reserves_serializer = ReservesSerializer(data = reserves_data)
+        if reserves_serializer.is_valid():
+            reserves_serializer.data["accessCode"]
+            
+            codeValue = reserves_serializer.data["accessCode"]
+            startValue = reserves_serializer.data["unixStartTime"]
+            endValue = reserves_serializer.data["unixEndTime"]
+
+            codeExists = (Reserves.objects.filter(accessCode=codeValue).filter(unixStartTime=startValue)
+                            .filter(unixEndTime=endValue).values_list('accessCode', named=True))
+        
+            if codeExists:
+                return JsonResponse("Success", safe=False)
+            else:
+                return JsonResponse("Failure", safe=False)
+        
+        else:
+            return JsonResponse("Invalid Data", safe=False)
+    
+    else:
+        return JsonResponse("Wrong", safe=False)
+
+
 
 
 
