@@ -150,7 +150,7 @@ class AvailabileTime():
             
             logger.info("{}:{} - {}".format(
                                         keyTime.hour, 
-                                        30 if (listValue.minute == 30) else "00", 
+                                        30 if (keyTime.minute == 30) else "00", 
                                         listForLog,
                                     ))
             
