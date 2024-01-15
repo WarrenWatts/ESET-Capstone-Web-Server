@@ -61,34 +61,34 @@ def readableTime(timeVal):
     return ("{}:{}{} {}".format(displayHour, extraZero, displayMin, hourPeriod))
 
 
-# TODO: Needs work...
+
+def validateTimeRange(start, end):
+    currentTimestamp = datetime.datetime.now().timestamp()
+
+    return True if (currentTimestamp >= start and currentTimestamp < end) else False
+        
+
+# REST API that is used to check the validity of access code
 @csrf_exempt
 def reservesAPI(request):
-    if request.method == "POST":
-        reserves_data = JSONParser().parse(request)
-        reserves_serializer = ReservesSerializer(data = reserves_data)
+    if request.method == "POST": # Fails if not a post request
+        reserves_data = JSONParser().parse(request) # Parses request from JSON into usable
+        reserves_serializer = ReservesSerializer(data=reserves_data) # Serialize 
         if reserves_serializer.is_valid():
-            reserves_serializer.data["accessCode"]
             
-            codeValue = reserves_serializer.data["accessCode"]
-            startValue = reserves_serializer.data["unixStartTime"]
-            endValue = reserves_serializer.data["unixEndTime"]
-
-            codeExists = (Reserves.objects.filter(accessCode=codeValue).filter(unixStartTime=startValue)
-                            .filter(unixEndTime=endValue).values_list('accessCode', named=True))
+            # This should only give back one object, but it may be best for us to verify that the...
+            # ...access code generated hasn't already been generated before and placed in the database.
+            codeTimes = (Reserves.objects.filter(accessCode=reserves_serializer.data["accessCode"])
+                            .values_list('unixStartTime', 'unixEndTime', named=True))
         
-            if codeExists:
-                return JsonResponse("Success", safe=False)
-            else:
-                return JsonResponse("Failure", safe=False)
-        
+            return (JsonResponse({"response":"Success"}) 
+                        if (validateTimeRange(codeTimes[0].unixStartTime, codeTimes[0].unixEndTime)) 
+                            else JsonResponse({"response":"Failure"}))
         else:
-            return JsonResponse("Invalid Data", safe=False)
+            return JsonResponse(data={"response":"Invalid Data"})
     
     else:
-        return JsonResponse("Wrong", safe=False)
-
-
+        return JsonResponse({"response":"Wrong HTTP Request"})
 
 
 
@@ -182,7 +182,6 @@ def checkSubmit(request):
 
     else:
         logger.warning("User submission failed due to improper HTTP request.")
-        
         return loadForm(request, "Incorrect HTTP Request sent. Try again.")
             
 

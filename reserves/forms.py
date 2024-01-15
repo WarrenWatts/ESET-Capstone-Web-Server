@@ -13,7 +13,7 @@ TIME_STR = "is no longer available. Please select again."
 
 
 # Function that validates that the date is in the specified date range
-def validate_date_range(date):
+def validateDateRange(date):
     selectedDate = datetime.date.fromisoformat(str(date))
     start = datetime.date.today()
     end = start + datetime.timedelta(days=7) # Adds 7 days to the start date
@@ -23,7 +23,7 @@ def validate_date_range(date):
 
 
 class ReservesForm(ModelForm):
-    date = forms.DateField(input_formats=['%Y-%m-%d'], validators=[validate_date_range]) # Ensures date is in ISO format + uses validator
+    date = forms.DateField(input_formats=['%Y-%m-%d'], validators=[validateDateRange]) # Ensures date is in ISO format + uses validator
     
     class Meta:
         model = Reserves
