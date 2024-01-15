@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html style="margin: 0; padding: 0; 
+        box-sizing: border-box; color: black; background-color: #EFEFEF;
+        font: 400 16px/20px Poppins, Arial;">
+    <head>
+        <title>Lock Wizards Email</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </style>
+    </head>
+    <body style="margin: 0 auto; max-width: 600px; background-color: white; width: 100%;">
+        <img style="height: 50px; object-fit: contain; margin: 10px 0px 0px 5px;" src="cid:Lock_Wizards_png.png" alt="Lock Wizards Logo">
+
+        <div style="margin: 0 1% 0 1%; display: block; height: min(4px); background-color: black;"></div>
+
+        <p style="margin-bottom: 8px; margin-top: 5px;">
+            Hi {{firstName}},
+        </p>
+        <p>
+            Here is your access code for your room reservation from {{unixStartTime}} - {{unixEndTime}} 
+            on {{date}}.
+        </p>
+
+        <p style="margin: 15px 0px 15px 0px; font-weight: 700;">
+            {{accessCode}}
+        </p>
+
+        <p>
+            Best,
+        </p>
+
+        <p>
+            The Lock Wizards Team
+        </p>
+    </body>
+</html>

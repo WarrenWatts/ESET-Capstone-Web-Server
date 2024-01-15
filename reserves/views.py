@@ -1,13 +1,23 @@
+from django.core.mail import EmailMultiAlternatives
+from email.mime.image import MIMEImage
+from django.template.loader import render_to_string
 from logging.handlers import RotatingFileHandler
-from django.template import loader
-from django.http import HttpResponse
+from django.utils.html import strip_tags
 from .available import AvailabileTime
-from .forms import ReservesForm
+from django.http import HttpResponse
+from django.template import loader
 from secrets import SystemRandom
+from .forms import ReservesForm
 from pathlib import Path
+from PIL import Image
 import datetime
 import logging
 
+
+
+# Constants
+EMAIL_PNG = 'Lock_Wizards_png.png'
+IMG_FILE_PATH = 'reserves/templates/reserves/static/pictures/logo/Lock_Wizards_png.png'
 
 
 # Logging setup for views.py file
@@ -21,7 +31,26 @@ logger.addHandler(file_handler)
 
 
 
-# Create your views here.
+# Function to display human readable times in the email
+def readableTime(timeVal):
+    timeDate = datetime.datetime.fromtimestamp(timeVal)
+    displayHour = timeDate.hour
+    displayMin = timeDate.minute
+    hourPeriod = "A.M."
+    extraZero = ""
+
+    if displayHour > 12:
+        displayHour -= 12
+        hourPeriod = "P.M."
+
+    if displayMin <= 9:
+        extraZero = "0"
+    
+    return ("{}:{}{} {}".format(displayHour, extraZero, displayMin, hourPeriod))
+
+
+
+# View for Home/Main Page
 def mainPage(request):
     template = loader.get_template("reserves/index.html") 
     context = dict()
@@ -29,6 +58,7 @@ def mainPage(request):
 
 
 
+# View for Form Page
 def loadForm(request, msgString = ""):
     dateDict = dict() # Dictionary to hold dates and their start/end times
     numDays = 7 # Number of calendar dates to search
@@ -50,6 +80,8 @@ def loadForm(request, msgString = ""):
 
 
 
+# View to check Form Page Submissions
+# NOTE: Emails are not asynchronous, if time in the future, add this feature!
 def checkSubmit(request):
     accessGenerator = SystemRandom() # Used to generate an access code securely
     context = dict()
@@ -62,6 +94,34 @@ def checkSubmit(request):
         if form.is_valid(): # Causes the form fields sent to be validated. Invalid if any errors found
             form.save() # Saves form info to the database
             template = loader.get_template("reserves/forms/form_submit.html")
+
+            context = {
+                "firstName": form.cleaned_data['firstName'],
+                "accessCode": form.cleaned_data['accessCode'],
+                "unixStartTime": readableTime(form.cleaned_data['unixStartTime']),
+                "unixEndTime": readableTime(form.cleaned_data['unixEndTime']),
+                "date": form.cleaned_data['date'],
+            }
+
+            html_message = render_to_string("forms/email.html", context = context)
+            plain_message = strip_tags(html_message)
+
+            message = EmailMultiAlternatives(
+                subject = "Email Django Test",
+                body = plain_message,
+                from_email = None,
+                to = [form.cleaned_data['email']],
+            )
+
+            message.attach_alternative(html_message, "text/html")
+
+            with open(Path.joinpath(mainDir, IMG_FILE_PATH), 'rb') as imageFile:
+                img = MIMEImage(imageFile.read())
+                img.add_header('Content-ID', '<{}>'.format(EMAIL_PNG)) # Gives the image its CID
+                img.add_header('Content-Disposition', 'inline', filename=EMAIL_PNG) # How the image should be displayed in the body
+            
+            message.attach(img)
+            message.send()
 
             return HttpResponse(template.render(context, request))
         
