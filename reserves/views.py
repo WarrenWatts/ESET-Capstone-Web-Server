@@ -9,7 +9,6 @@ from django.template import loader
 from secrets import SystemRandom
 from .forms import ReservesForm
 from pathlib import Path
-from PIL import Image
 import datetime
 import logging
 
@@ -95,6 +94,7 @@ def checkSubmit(request):
             form.save() # Saves form info to the database
             template = loader.get_template("reserves/forms/form_submit.html")
 
+            # Context dictionary to be sent to email.html file
             context = {
                 "firstName": form.cleaned_data['firstName'],
                 "accessCode": form.cleaned_data['accessCode'],
@@ -103,25 +103,29 @@ def checkSubmit(request):
                 "date": form.cleaned_data['date'],
             }
 
+            # Making the email.html file into a string and stripping it of the HTML tags
             html_message = render_to_string("forms/email.html", context = context)
             plain_message = strip_tags(html_message)
 
+            # Contents of the email
             message = EmailMultiAlternatives(
-                subject = "Email Django Test",
+                subject = "Your Access Code",
                 body = plain_message,
                 from_email = None,
                 to = [form.cleaned_data['email']],
             )
 
+            # Attaching an alternative version of the html
             message.attach_alternative(html_message, "text/html")
 
+            # Opening the Lock_Wizards_png.png image and reading it as binary
             with open(Path.joinpath(mainDir, IMG_FILE_PATH), 'rb') as imageFile:
                 img = MIMEImage(imageFile.read())
                 img.add_header('Content-ID', '<{}>'.format(EMAIL_PNG)) # Gives the image its CID
                 img.add_header('Content-Disposition', 'inline', filename=EMAIL_PNG) # How the image should be displayed in the body
             
-            message.attach(img)
-            message.send()
+            message.attach(img) # Attaching the CID image to the message that will be sent to the email
+            message.send() # Sending email message
 
             return HttpResponse(template.render(context, request))
         
