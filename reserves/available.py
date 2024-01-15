@@ -142,15 +142,15 @@ class AvailabileTime():
             keyTime = datetime.datetime.fromtimestamp(key)
             for i in value:
                 listValue = datetime.datetime.fromtimestamp(i)
-            # TODO: Fix flawed logic here...
+            # TODO: Fix flawed logic here if time (just for logging, so not of the utmost importance...)
                 listForLog.append("{}:{}".format(
                                                 listValue.hour, 
-                                                30 if listValue.minute == 30 else "00",
+                                                30 if (listValue.minute == 30) else "00",
                                             )) # Statement to prevent minutes only showing a single zero
             
             logger.info("{}:{} - {}".format(
                                         keyTime.hour, 
-                                        30 if listValue.minute == 30 else "00", 
+                                        30 if (listValue.minute == 30) else "00", 
                                         listForLog,
                                     ))
             
