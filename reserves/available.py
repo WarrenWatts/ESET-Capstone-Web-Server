@@ -30,17 +30,6 @@ class AvailabileTime():
         startHour = 6 # The default hour used to create the origTimeList (hours between 0-23)
         startCount = 0 # Since available times are in increments of 30 min, used to start at 30 min for the hour if needed
 
-        # If the calendar day is the current day and the current hour of today is greater than the default
-        if self.today.date() == self.date and self.today.hour >= 6:
-
-             # If the current minutes for the current hour is greater than 30, increase starting hour by 1
-            startHour = (self.today.hour + 1 if (self.today.minute > 30)
-                            else self.today.hour)
-
-            # If the current minutes for the current hour is greater than 30, the startCount is equivalent to two times the startHour minus 12 (--> 2 times default hour)
-            startCount = (startHour * 2 - 12 if (self.today.minute > 30) 
-                                else startHour * 2 - 11)
-
         origTimeList = self.__originalTimes(startHour, startCount)
 
         # Remove last item from startTimes list argument and first item from endTimes list argument (11:00pm never a start time, 6:00am never an end time)
@@ -74,7 +63,7 @@ class AvailabileTime():
             
             # If minutesT is 30, then the next loop will be for the next hour
             hourT = hourT+1 if (minutesT == 30) else hourT
-        logger.debug("Original Time List: {}".format(origTimeList))
+
         return origTimeList
     
 
@@ -87,14 +76,20 @@ class AvailabileTime():
                 filter(date=self.date).
                 values_list('unixStartTime', 'unixEndTime', named=True)
             ) # Uses a named tuple
-        logger.debug("THIS IS myData: {}".format)
-        if myData: # Statement checks if anything was queried 
-            for queryset in myData:
-                if queryset.unixStartTime in startTimes: # If queried start time in startTimes list, remove it
-                    startTimes.remove(queryset.unixStartTime)
-                
-                if queryset.unixEndTime in endTimes:
-                    endTimes.remove(queryset.unixEndTime) # Since we know that the startTime is 
+        
+        # If no data, it won't loop through
+        for queryset in myData: # Using .remove() in this for loop is okay since .remove() isn't for the same list being looped
+            try:
+                if queryset.unixStartTime % 9 != 0: # If the start time in the database is not a 30 minute increment
+                    raise Exception
+                if queryset.unixEndTime % 9 != 0: # If the end time in the database is not a 30 minute increment
+                    raise Exception
+            except:
+                logger.critical("Someone has likely gained unauthorized access to the database. Incorrect time found.")
+            
+            if queryset.unixStartTime in startTimes: # If queried start time in startTimes list, remove it
+                startTimes.remove(queryset.unixStartTime)
+                endTimes.remove(queryset.unixEndTime) # Since we know that the startTime is 
 
                 # for loop starts 30 minutes after start time, increments by 30, doesn't execute if start and stop are equal
                 for i in range(
@@ -102,12 +97,14 @@ class AvailabileTime():
                             queryset.unixEndTime, 
                             THIRTY_MIN,
                         ):
-                    if i in startTimes:
-                        startTimes.remove(i)
-                    
-                    if i in endTimes:
-                        endTimes.remove(i)
-
+                    startTimes.remove(i)
+                    endTimes.remove(i)
+        
+        if self.today.date() == self.date:
+            # Re-assign startTimes to a new list only for current day (based on current time with 15 minute window).
+            startTimes = [time for time in startTimes 
+                            if time > int(datetime.datetime.now().timestamp()) - 900]
+                
         logger.debug("Start Times List: {}".format(startTimes))
         logger.debug("End Times List: {}".format(endTimes))
         return [startTimes, endTimes] # Return nested lists
@@ -131,7 +128,7 @@ class AvailabileTime():
                 
                 # Append incrementTime to the key's list of end times
                 unixTimes[key].append(incrementTime)
-                logger.debug("Unix Times dict: {}".format(unixTimes))
+
         return unixTimes
     
 
