@@ -19,50 +19,70 @@
         <script src="{% static 'scripts/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
     </head>
     <body>
-        <form novalidate class="hero" method="post" action="{% url 'submit' %}">
-            {% csrf_token %}
-            <div class="input-group">
-                {% if myMessage %}
-                    <h1 class="testHeader">{{ myMessage }}</h1>
-                {% endif %}
-            </div>
-            <div class="input-group">
-                <label id="firstNameLabel">First Name</label>
-                <input type="text" id="firstField" name="firstName" pattern="[A-za-z]{1,50}" maxlength="50" required>
-                <span id="firstError"></span>
-            </div>
-            <div class="input-group">
-                <label id="lastNameLabel">Last Name</label>
-                <input type="text" id="lastField" name="lastName" pattern="[A-za-z]{1,50}" maxlength="50" required>
-                <span id="lastError"></span>
-            </div>
-            <div class="input-group">
-                <label id="emailLabel">Email</label>
-                <input type="email" id="emailField" name="email" pattern="[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$" 
-                        maxlength="62" required>
-                <span id="emailError"></span>
-            </div>
-            <div class="input-group">
-                <input type="text" id="datePicker" name="date" required> 
-                <label for="datePicker">Date: *</label>
-                <span id="datePickError"></span>
-            </div>
-            <div class="input-group">
-                <select id="starttime" name="unixStartTime" required>
-                    <option>Select a time</option>
-                </select>
-                <label for="starttime">Start Time: *</label>
-                <span id="startTimeError"></span>
-            </div>
-            <div class="input-group">
-                <select id="endtime" name="unixEndTime" required>
-                    <option>Select a time</option>
-                </select>
-                <label for="endtime">End Time: *</label>
-                <span id="endTimeError"></span>
-            </div>
-            <button>Submit</button>
-        </form>
+        <header>
+            <a href="{% url 'home' %}">
+                <img class="header-logo" src="{% static 'pictures/logo/Lock_Wizards_png.png' %}" alt="Lock Wizards Logo">
+            </a>
+        </header>
+        <main>
+            <form novalidate method="post" action="{% url 'submit' %}">
+                {% csrf_token %}
+                <div class="main-form-grid">
+                    <div class="graphic-block1"></div>
+                    <div class="graphic-block2"></div>
+                    <div class="form-box">
+                        <h1 class="form-header-text common-header-format">
+                            Time Submission Form
+                        </h1>
+                        <p class="required-text common-header-format">
+                            Required *
+                        </p>
+                        {% if myMessage %}
+                        <p class="db-error-text common-header-format">{{myMessage}}</p>
+                        {% endif %}
+                        <div class="form-inputs">
+                            <div class="input-group first-name">
+                                <label for="firstField">Name *</label>
+                                <input type="text" placeholder="First" id="firstField" name="firstName" pattern="[A-za-z]{1,50}" maxlength="50" required>
+                                <span class="general-error" id="firstError"></span>
+                            </div>
+                            <div class="input-group last-name">
+                                <br class="line-break">
+                                <input type="text" placeholder="Last" id="lastField" name="lastName" pattern="[A-za-z]{1,50}" maxlength="50" required>
+                                <span class="general-error" id="lastError"></span>
+                            </div>
+                            <div class="input-group email-class">
+                                <label for="emailField">Email *</label>
+                                <input type="email" id="emailField" name="email" pattern="[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$" maxlength="62" required>
+                                <span class="general-error" id="emailError"></span>
+                            </div>
+                            <div class="input-group the-date-picker">
+                                <label for="datePicker">Date *</label>
+                                <input type="text" id="datePicker" name="date" style="background-color: #DFFAD4; border: 1px solid black; border-radius: 3px; padding: 4% 0% 4% 2%;" required>
+                                <span class="general-error" id="datePickError"></span>
+                            </div>
+                            <div class="input-group start-time">
+                                <label for="starttime">Start Time *</label>
+                                <select id="starttime" name="unixStartTime" required>
+                                    <option>Select a time</option>
+                                </select>
+                                <span class="general-error" id="startTimeError"></span>
+                            </div>
+                            <div class="input-group end-time">
+                                <label for="endtime">End Time *</label>
+                                <select id="endtime" name="unixEndTime" required>
+                                    <option>Select a time</option>
+                                </select>
+                                <span class="general-error" id="endTimeError"></span>
+                            </div>
+                        </div>
+                        <div class="button-container">
+                            <button class="submit-button">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </main>
         <script src="{% static 'scripts/form.js' %}" defer></script>
         {{myMembers|json_script}}
     </body>

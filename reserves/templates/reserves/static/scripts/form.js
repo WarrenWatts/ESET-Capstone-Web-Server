@@ -39,36 +39,28 @@ window.onload = function() { // Function executes on the loading of the browser 
 
 
 // Function allows unix timestamps to be displayed in a human readable form for selection
+// NOTE: Only worrying about times between 6:00am through 11:00pm
 function timeDisplayed(theTime){
     const theDate = new Date(parseInt(theTime) * 1000); // Multiplied by 1000 to correct the unix timestamp value in Date()
-    let displayHour = theDate.getHours();
+    let displayHour = (theDate.getHours() > 12) ? theDate.getHours() - 12 : theDate.getHours();
     let displayMin = theDate.getMinutes();
-    let hourPeriod = "A.M.";
-    let extraZero = "";
 
-    if(displayHour > 12) {
-        displayHour -= 12;
-        hourPeriod = "P.M.";
-    }
-
-    if(displayMin <= 9)
-        extraZero = "0";
-
-    return `${displayHour}:${extraZero}${displayMin} 
-            ${hourPeriod}`;
+    return `${displayHour}:${(displayMin == 30) ? "30" : "00"} 
+            ${(theDate.getHours() >= 12) ? "P.M." : "A.M."}`;
 }
 
 
 
 // Using the DOM to get each field that needs to be possibly manipulated/changed
-const emailField = document.getElementById("emailField");
-const emailError = document.getElementById("emailError");
 
 const firstNameField = document.getElementById("firstField");
 const firstNameError = document.getElementById("firstError");
 
 const lastNameField = document.getElementById("lastField");
 const lastNameError = document.getElementById("lastError");
+
+const emailField = document.getElementById("emailField");
+const emailError = document.getElementById("emailError");
 
 const form = document.querySelector("form");
 
@@ -97,13 +89,13 @@ const errorMsgList = [
 ];
 
 // Event listeners that recognize when they have been deselected and can be refocused on if submission is attempted and fails because of their field
-firstNameField.addEventListener("blur", function() {blurFunction(errorMsgList[1], firstNameField, firstNameError)});
+firstNameField.addEventListener("blur", function() {blurFunction(errorMsgList[0], firstNameField, firstNameError)});
 firstNameField.addEventListener("focus", focusFunction(regularExp.name, firstNameField, firstNameError));
 
-lastNameField.addEventListener("blur", function() {blurFunction(errorMsgList[2], lastNameField, lastNameError)});
+lastNameField.addEventListener("blur", function() {blurFunction(errorMsgList[1], lastNameField, lastNameError)});
 lastNameField.addEventListener("focus", focusFunction(regularExp.name, lastNameField, lastNameError));
 
-emailField.addEventListener("blur", function() {blurFunction(errorMsgList[0], emailField, emailError)});
+emailField.addEventListener("blur", function() {blurFunction(errorMsgList[2], emailField, emailError)});
 emailField.addEventListener("focus", focusFunction(regularExp.email, emailField, emailError));
 
 
@@ -162,7 +154,8 @@ form.addEventListener("submit", (event) => { // On the click of the submit butto
 // Function executed upon deselection of input field
 function blurFunction(theMsg, theField, theError){
     if(!theField.validity.valid) { // Checking the HTML validators for the input
-        theField.style.backgroundColor = "red";
+        theField.style.borderColor = "red";
+        theField.style.backgroundColor = "#fad4d4";
         if(!theField.value) { // Checking if the field is empty
             theError.innerHTML = "This field is required";
         }
@@ -184,10 +177,11 @@ function focusFunction(expression, theField, theError) {
     // Event listener that what's for an input to occur before executing the function
     theField.addEventListener("input", function(){
         if(theField.value.match(expression)){
-            theField.style.backgroundColor = "green"; // Turns green if the input matches the regex
+            theField.style.borderColor = "green"; // Turns green if the input matches the regex
             theError.innerHTML = "";
         }
         else{
+            theField.style.borderColor = "black";
             theField.style.backgroundColor = "white";
         }
     });

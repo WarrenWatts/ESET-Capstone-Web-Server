@@ -70,7 +70,6 @@ class AvailabileTime():
     def __postDbTimes(self, startTimes = None, endTimes = None) -> list:
         logger.debug("Entering __postDbTimes...")
         # MySQL database query that only looks for the current date, and only takes in the start and end times for each row
-        # NOTE: Implementation here isn't of the best quality, but unless more time is acquired near the end of the project, well...it works
         myData = (
                 Reserves.objects.
                 filter(date=self.date).

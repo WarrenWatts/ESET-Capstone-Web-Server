@@ -44,29 +44,26 @@ logger.addHandler(file_handler)
 
 
 # Function to display human readable times in the email
+# NOTE: Only worrying about times between 6:00am through 11:00pm
 def readableTime(timeVal):
     timeDate = datetime.datetime.fromtimestamp(timeVal)
-    displayHour = timeDate.hour
-    displayMin = timeDate.minute
-    hourPeriod = "A.M."
-    extraZero = ""
 
-    if displayHour > 12:
-        displayHour -= 12
-        hourPeriod = "P.M."
-
-    if displayMin <= 9:
-        extraZero = "0"
+    displayHour = timeDate.hour - 12 if (timeDate.hour > 12) else timeDate.hour
     
-    return ("{}:{}{} {}".format(displayHour, extraZero, displayMin, hourPeriod))
+    return ("{}:{} {}".format(
+                                displayHour, 
+                                "30" if (timeDate.minute == 30) else "00", 
+                                "P.M." if (timeDate.hour >= 12) else "A.M.",
+                            ))
 
 
-
+# Function used to validate that the current time is in the time range of a reservation 
 def validateTimeRange(start, end):
     currentTimestamp = datetime.datetime.now().timestamp()
 
     return True if (currentTimestamp >= start and currentTimestamp < end) else False
         
+
 
 # REST API that is used to check the validity of access code
 @csrf_exempt
@@ -80,23 +77,23 @@ def reservesAPI(request):
             # ...access code generated hasn't already been generated before and placed in the database.
             codeTimes = (Reserves.objects.filter(accessCode=reserves_serializer.data["accessCode"])
                             .values_list('unixStartTime', 'unixEndTime', named=True))
-        
+            
+            # NOTE: If logging, may want to add a logging statement to the failures if possible
             return (JsonResponse({"response":"Success"}) 
                         if (validateTimeRange(codeTimes[0].unixStartTime, codeTimes[0].unixEndTime)) 
                             else JsonResponse({"response":"Failure"}))
-        else:
+        else: # TODO: Add logger
             return JsonResponse(data={"response":"Invalid Data"})
     
-    else:
+    else: # TODO: Add logger
         return JsonResponse({"response":"Wrong HTTP Request"})
 
 
 
 # View for Home/Main Page
 def mainPage(request):
-    template = loader.get_template("reserves/index.html") 
-    context = dict()
-    return HttpResponse(template.render(context, request))
+    template = loader.get_template("reserves/index.html")
+    return HttpResponse(template.render(dict(), request))
 
 
 
@@ -126,7 +123,6 @@ def loadForm(request, msgString = ""):
 # NOTE: Emails are not asynchronous, if time in the future, add this feature!
 def checkSubmit(request):
     accessGenerator = SystemRandom() # Used to generate an access code securely
-    context = dict()
 
     if request.method == "POST": # Only execute code if the HTTP request is POST
         updated_request = request.POST.copy()
@@ -135,7 +131,6 @@ def checkSubmit(request):
         
         if form.is_valid(): # Causes the form fields sent to be validated. Invalid if any errors found
             form.save() # Saves form info to the database
-            template = loader.get_template("reserves/forms/form_submit.html")
 
             # Context dictionary to be sent to email.html file
             context = {
@@ -170,6 +165,8 @@ def checkSubmit(request):
             message.attach(img) # Attaching the CID image to the message that will be sent to the email
             message.send() # Sending email message
 
+            template = loader.get_template("reserves/forms/form_submit.html")
+
             return HttpResponse(template.render(context, request))
         
         else:
@@ -177,8 +174,12 @@ def checkSubmit(request):
             for _, errors in form.errors.items(): # Collects the validation errors raised and places them in a list
                 listNew = list(errors)
             logger.warning("User submission failed due to: {}".format(listNew))
-            # Reloads the form page, now placing the first error encountered at the top of the page
-            return loadForm(request, listNew[0])
+
+            try: # If, for some reason, the program is unable to generate an access code, a TypeError will be encountered.
+                return loadForm(request, listNew[0]) # Reloads the form page, now placing the first error encountered at the top of the page
+            except TypeError:
+                logger.critical("Program was unable to generate an access code.")
+                return loadForm(request, listNew.append("An error occurred, please try again."))
 
     else:
         logger.warning("User submission failed due to improper HTTP request.")

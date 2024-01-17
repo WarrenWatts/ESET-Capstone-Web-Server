@@ -1,61 +1,316 @@
+/* General styling*/
+/*---------------*/
+:root {
+  color: var(--palette-color-1);
+  background-color: #EFEFEF;
+  font: 400 16px/20px Poppins, Arial;
+  -webkit-text-size-adjust: 100%;
+}
+
+* {
+  --palette-color-1: white;
+  --palette-color-2: #7ED957;
+  --palette-color-3: black;
+  --palette-color-4: #DFFAD4;
+  --palette-color-5: red;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 80%;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  background-color: var(--palette-color-1);
+}
+
+/*a {text-decoration: none;}*/
+
+
+
+/* Header styling*/
+/*---------------*/
+header {
+  z-index: 10;
+  display: flex;
+
+  max-width: inherit;
+  width: inherit;
+  height: 90px;
+  padding: 0 clamp(1.25rem, -0.089rem + 3.571vw, 3.125rem);
+
+  position: fixed;
+  top: 0px;
+
+  background-color: var(--palette-color-1);
+  box-shadow: 
+      0px 0px 3px rgba(0, 0, 0, 0.2),
+      0px 0px 3px rgba(0, 0, 0, 0.2) inset;
+}
+
+.header-logo {
+  z-index: 11;
+  position: absolute;
+  object-fit: contain;
+  height: 80px;
+  top: 5px;
+}
+
+.header-logo:hover {cursor: pointer;}
+
+
+
+/*Main Block Styling*/
+/*------------------*/
+main {
+  margin-top: 90px;
+  min-height: 100vh;
+  
+  display: flex;
+  flex-direction: column;
+  max-width: 53%;
+  width: 100%;
+  justify-content: center;
+  align-self: center;
+  background-color: white;
+}
+
+/*Over-arching Form Grid Styling*/
+/*------------------------------*/
+.main-form-grid {
+  display: grid;
+  min-height: 500px;
+  grid-template-columns: 20% 80%;
+  grid-template-rows: 5% 95%;
+  grid-template-areas: 
+      "graphic-block1 graphic-block2"
+      "form-box form-box";
+}
+
+.graphic-block1 {
+  display: grid;
+  grid-area: graphic-block1;
+  background-color: var(--palette-color-2);
+}
+
+.graphic-block2 {
+  display: grid;
+  grid-area: graphic-block2;
+  background-color: #E1E1E1;
+}
+
+/*Form Box Grid Styling*/
+/*------------------------------*/
+.form-box {
+  display: grid;
+  grid-area: form-box;
+  grid-template-columns: 100%;
+  grid-template-rows: 10% 5% 5% 60% 20%;
+  grid-template-areas: 
+      "form-header-text"
+      "required-text"
+      "db-error-text"
+      "form-inputs"
+      "button-container";
+  background-color: rgba(126, 217, 87, 0.6);
+}
+
+.common-header-format {
+  font: 400
+        clamp(0.75rem, 0.716rem + 0.17vw, 1.125rem)
+        Poppins, Arial;
+  align-items: center;
+  padding-left: 3%;
+}
+
+.form-header-text {
+  font: 
+        600 
+        clamp(1rem, 0.864rem + 0.682vw, 2.5rem)
+        /20px
+        Poppins, Arial;
+  padding-left: 2%;
+  color: var(--palette-color-3);
+  display: grid;
+  grid-area: form-header-text;
+}
+
+.required-text {
+  color: var(--palette-color-3);
+  display: grid;
+  grid-area: required-text;
+}
+
+.db-error-text {
+  font-weight: 500;
+  display: grid;
+  grid-area: db-error-text;
+  margin-bottom: 3%;
+  color: var(--palette-color-5);
+}
+
+/*Button Styling*/
+/*--------------*/
+.button-container{
+  display: grid;
+  grid-area: button-container;
+  padding-bottom: 2%;
+}
+
+button{
+  width: 50%;
+  justify-self: center;
+  align-self: center;
+}
+
+.submit-button {
+  width: 160px;
+  height: 50px;
+  
+  font: 
+      500 
+      clamp(1rem, 0.949rem + 0.256vw, 1.563rem)
+      /20px 
+      Poppins, Arial;
+
+  color: var(--palette-color-1);
+  background-color: var(--palette-color-2);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+  border: none;
+  border-radius: 50px;
+  transition: 
+      background-color 0.1s,
+      box-shadow 0.1s;
+}
+
+.submit-button:hover {
+  cursor: pointer;
+  background-color: #6cb94b;
+  box-shadow: none;
+}
+
+.submit-button:active {background-color: #508937;}
+
+
+/*Form Inputs Grid Styling*/
+/*------------------------------*/
+.form-inputs {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: 33% 34% 33%;
+  grid-template-areas: 
+      "first-name last-name"
+      "email-class the-date-picker"
+      "start-time end-time";
+  grid-area: form-inputs;
+}
+
+.first-name {display: grid; grid-area: first-name;}
+
+.last-name {display: grid; grid-area: last-name;}
+
+.email-class {display: grid; grid-area: email-class;}
+
+.the-date-picker {display: grid; grid-area: the-date-picker;}
+
+.start-time {display: grid; grid-area: start-time;}
+
+.end-time {display: grid; grid-area: end-time;}
+
+label {
+  color: var(--palette-color-3);
+  font: 500
+        clamp(0.75rem, 0.705rem + 0.227vw, 1.25rem)
+        Poppins, Arial;
+}
+
+
+.input-group {
+  margin-left: 10%;
+  margin-right: 10%;
+  max-width: 600px;
+  position: relative;
+  margin-bottom: 50px;
+}
+
+#emailField, #firstField, #lastField,
+#endtime, #starttime {
+  padding: 4% 0% 4% 2%;
+  border-radius: 3px;
+  border: 1px solid black;
+  background-color: var(--palette-color-4);
+}
+
+
+#firstError, #lastError,
+#emailError, #datePickError,
+#startTimeError, #endTimeError {top: 10%;}
+
+.general-error{
+  font: 400
+        clamp(0.625rem, 0.568rem + 0.284vw, 1.25rem)
+        Poppins, Arial;
+  
+  position: relative;
+  color: var(--palette-color-5);
+}
+
+/*jQuery Calendar Styling*/
+/*-----------------------*/
 .ui-datepicker {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
 
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Poppins, sans-serif;
-  }
-  
-  .testHeader{
-    margin-bottom: 100px;
-    color: red;
-  }
-  .hero{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .input-group {
-    width: 90%;
-    max-width: 600px;
-    position: relative;
-    margin-bottom: 50px;
-  }
-  
-  #emailField, #firstField, #lastField{
-    display: block;
-    width: 100%;
-    border: 0;
-    border-bottom: 2px solid #555;
-    background: transparent;
-    outline: none;
-    font-size: 26px;
-    padding: 5px 2px;
-    position: relative;
-    z-index: 10;
+
+@media all and (max-width: 1024px) {
+
+  body {max-width: 100%;}
+
+  header {height: 60px;}
+
+  .header-logo {height: 50px;}
+
+  .form-inputs {
+    grid-template-columns: 1fr;
+    grid-template-rows:  16.6% 16.6% 16.6% 16.6% 16.6% 16.6%;
+    grid-template-areas: 
+        "first-name" 
+        "last-name"
+        "email-class"
+        "the-date-picker"
+        "start-time"
+        "end-time";
   }
 
-  #emailLabel{
-    display: block;
-    position: absolute;
-    bottom: 5px;
-    left: 2px;
-    color: #777;
-    font-size: 18px;
+  .line-break {display: none;}
+
+  .last-name {padding-top: 4%;}
+
+  .main-form-grid {grid-template-rows: 2% 98%;}
+
+  .form-box {grid-template-rows: 5% 5% 5% 70% 15%;}
+
+  .button-container{
+    display: grid;
+    grid-area: button-container;
+    padding-bottom: 2%;
+  }
+  
+  button{
+    width: 50%;
+    justify-self: center;
+    align-self: center;
+  }
+  
+  .submit-button {
+    width: clamp(8rem, 7.091rem + 4.545vw, 10rem);
+    height: clamp(2.5rem, 2.216rem + 1.42vw, 3.125rem);
   }
 
-  #emailError, #firstError, #lastError,
-  #datePickError, #startTimeError, #endTimeError{
-    position: absolute;
-    top: 100%;
-    left: 2px;
-    font-size: 16px;
-    font-weight: 400;
-    color: red;
-  }
+  .db-error-text {line-height: 15px;}
+
+}
