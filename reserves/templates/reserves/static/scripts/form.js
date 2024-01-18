@@ -46,7 +46,7 @@ function timeDisplayed(theTime){
     let displayMin = theDate.getMinutes();
 
     return `${displayHour}:${(displayMin == 30) ? "30" : "00"} 
-            ${(theDate.getHours() >= 12) ? "P.M." : "A.M."}`;
+                ${(theDate.getHours() >= 12) ? "P.M." : "A.M."}`;
 }
 
 
