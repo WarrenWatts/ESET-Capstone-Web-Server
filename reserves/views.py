@@ -37,7 +37,7 @@ mainDir = Path.cwd()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - [Line: %(lineno)d] - %(message)s')
-file_handler = RotatingFileHandler(mainDir.joinpath('reserves/reservesLogFolder/views.log'))
+file_handler = RotatingFileHandler(mainDir.joinpath('reserves/logs/views.log'))
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 

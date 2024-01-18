@@ -10,7 +10,7 @@ mainDir = Path.cwd()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - [Line: %(lineno)d] - %(message)s')
-file_handler = RotatingFileHandler(mainDir.joinpath('reserves/reservesLogFolder/available.log'))
+file_handler = RotatingFileHandler(mainDir.joinpath('reserves/logs/available.log'))
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 

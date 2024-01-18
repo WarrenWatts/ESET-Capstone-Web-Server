@@ -57,24 +57,6 @@
                 </a>
             </div>
         </main>
-        <script>
-            let index = 0;
-            slideShow();
-
-            function slideShow() {
-                const images = document.getElementsByClassName("statement-photo");
-
-                for (let i = 0; i < images.length; i++)
-                    images[i].style.display = "none";
-                
-                index++;
-                if (index > images.length)
-                    index = 1;
-                
-                images[index-1].style.display = "inline";
-
-                setTimeout(slideShow, 10000);
-            }
-        </script>
+        <script src="{% static 'scripts/slideshow.js' %}"></script>
     </body>
 </html>
