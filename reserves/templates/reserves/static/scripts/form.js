@@ -1,52 +1,112 @@
-const dataFromDB = JSON.parse(
-    document.currentScript.
-    nextElementSibling.textContent
-); // Parsing the JSON created and passed from Django Python with the dates and their respective start/end times
+/* Texas A&M University
+** Electronic Systems Engineering Technology
+** ESET-420 Engineering Technology Capstone II
+** Author: Warren Watts
+** File: form.js
+** --------
+** Javascript code for the Form Page of the website.
+** It provides a way to display the available dates and their
+** respective start times and end times in addition to providing
+** UI and input validation features.
+*/
 
-const noTimeAvailStr = "None available";
-const timeAvailStr = "Select a time";
-const startSel = document.getElementById("starttime"); // Const for selected start time
-const endSel = document.getElementById("endtime"); // Const for selected end time
+
+// Gets the dates, start times, and end times from Django Python
+const dataFromDB = JSON.parse(document.currentScript.
+                                    nextElementSibling.textContent);
+
+const timeCorrection = 1000;
+const emptyStr = "";
+
+const MeridiemEnum = Object.freeze({
+    Ante : "A.M.",
+    Post : "P.M.",
+})
+
+const ErrEnum = Object.freeze({
+    Required : "This field is required",
+})
+
+const RegExpEnum = Object.freeze({
+    Email: RegExp(/^[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/),
+    Name: RegExp(/^[A-za-z]{1,50}$/),
+})
+
+const DropdownEnum = Object.freeze({
+    Select : "Select a time",
+    None : "None available",
+})
+
+const MinutesEnum = Object.freeze({
+    Zero : "00",
+    Thirty : "30",
+})
+
+const ColorsEnum = Object.freeze({
+    Red : "#ff0000",
+    White : "#ffffff",
+    Green : "#008000",
+    Black : "#000000",
+    LightRed : "#fad4d4",
+})
+
+const selStart = document.getElementById("starttime"); // Const for selected start time
+const selEnd = document.getElementById("endtime"); // Const for selected end time
 
 
 // Note: much of this code uses events...
-window.onload = function() { // Function executes on the loading of the browser window
-    let dateSel = ""; // Creating an empty string for the dateSel variable (global to all functions nested here)
+window.onload = function() 
+{ // Function executes on the loading of the browser window
+    let selDate = emptyStr; // Creating an empty string for the selDate variable (global to all functions nested here)
 
     $("#datePicker").datepicker({ // Using jQuery's datepicker calendar
-        dateFormat: 'yy-mm-dd', // ISO format
-        minDate: '0d',
-        maxDate: '6d',
-        onSelect: function() { // When a date is selected, the function below will execute
-            startSel.length = 1; // Resets the length of the start time dropdown options 
-            endSel.length = 1; // Resets the length of the end time dropdown options
-            dateSel = this.value;
-            for(let start in dataFromDB[this.value]) // Filling the start time dropdown with start times respective of the date
-                startSel.options[startSel.options.length] = new Option(timeDisplayed(start), start);
+        dateFormat: "yy-mm-dd", // ISO format
+        minDate: "0d",
+        maxDate: "6d",
+        onSelect: function() 
+        { // When a date is selected, the function below will execute
+            selStart.length = 1; // Resets the length of the start time dropdown options 
+            selEnd.length = 1; // Resets the length of the end time dropdown options
+            selDate = this.value;
 
-            startSel.options[0].innerHTML = endSel.options[0].innerHTML = 
-                                                ((startSel.length === 1) ? noTimeAvailStr : timeAvailStr); // If no times are available for the date
+            for (let i in dataFromDB[this.value]) 
+            {
+                selStart.options[selStart.options.length] = new Option(unixToReadable(i), i);
+            } // Filling the start time dropdown with start times respective of the date
+
+            selStart.options[0].innerHTML = selEnd.options[0].innerHTML = 
+                    ((selStart.length === 1) ? DropdownEnum.None : DropdownEnum.Select);
         },
     });
 
-    startSel.onchange = function() { // When a start time is selected, the function will execute
-        endSel.length = 1; // Resets the length of the end time dropdown options
-        let endTime = dataFromDB[dateSel][this.value];
-        for(let i = 0; i < endTime.length; i++)
-            endSel.options[endSel.options.length] = new Option(timeDisplayed(endTime[i]), endTime[i]);
+    selStart.onchange = function() 
+    { // When a start time is selected, the function will execute
+        selEnd.length = 1; // Resets the length of the end time dropdown options
+        let endTime = dataFromDB[selDate][this.value];
+
+        for (let i = 0; i < endTime.length; i++)
+        {
+            selEnd.options[selEnd.options.length] = 
+                    new Option(unixToReadable(endTime[i]), endTime[i]);
+        }
     }       
 }
 
 
 // Function allows unix timestamps to be displayed in a human readable form for selection
-// NOTE: Only worrying about times between 6:00am through 11:00pm
-function timeDisplayed(theTime){
-    const theDate = new Date(parseInt(theTime) * 1000); // Multiplied by 1000 to correct the unix timestamp value in Date()
-    let displayHour = (theDate.getHours() > 12) ? theDate.getHours() - 12 : theDate.getHours();
-    let displayMin = theDate.getMinutes();
+// NOTE: Only worrying about times between 6:00am through 11:00pm in increments of 30 minutes
+function unixToReadable(timestampVal)
+{
+    const dateVal = new Date(parseInt(timestampVal) * timeCorrection); // Multiplied by 1000 to correct the unix timestamp value in Date()
+    let hourVal24Clk = dateVal.getHours();
 
-    return `${displayHour}:${(displayMin == 30) ? "30" : "00"} 
-                ${(theDate.getHours() >= 12) ? "P.M." : "A.M."}`;
+    let minuteVal = (dateVal.getMinutes() === 30) ? MinutesEnum.Thirty : MinutesEnum.Zero;
+
+    let hourVal12Clk = (hourVal24Clk > 12) ? hourVal24Clk - 12 : hourVal24Clk;
+
+    let meridiemVal = (hourVal24Clk >= 12) ? MeridiemEnum.Post : MeridiemEnum.Ante;
+    
+    return `${hourVal12Clk}:${minuteVal} ${meridiemVal}`; /*Enum in javascript???*/
 }
 
 
@@ -54,135 +114,152 @@ function timeDisplayed(theTime){
 // Using the DOM to get each field that needs to be possibly manipulated/changed
 
 const firstNameField = document.getElementById("firstField");
-const firstNameError = document.getElementById("firstError");
+const firstNameErr = document.getElementById("firstError");
 
 const lastNameField = document.getElementById("lastField");
-const lastNameError = document.getElementById("lastError");
+const lastNameErr = document.getElementById("lastError");
 
 const emailField = document.getElementById("emailField");
-const emailError = document.getElementById("emailError");
+const emailErr = document.getElementById("emailError");
 
-const form = document.querySelector("form");
+const FORM_ELEMENT = document.querySelector("form");
 
-const datePickError = document.getElementById("datePickError");
-const startTimeError = document.getElementById("startTimeError");
-const endTimeError = document.getElementById("endTimeError");
-
-const regularExp = {
-    email: RegExp(/^[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/),
-    name: RegExp(/^[A-za-z]{1,50}$/),
-}
+const DATE_PICKER_ERR = document.getElementById("datePickError");
+const START_TIME_ERR = document.getElementById("startTimeError");
+const END_TIME_ERR = document.getElementById("endTimeError");
 
 // Ordered list of fields and their error elements used by the DOM that come prior to the jQuery calendar
-const typedFieldList = [firstNameField, lastNameField, emailField];
-const typedErrorList = [firstNameError, lastNameError, emailError];
+const KEY_INPUT_FIELD = [firstNameField, lastNameField, emailField];
+const KEY_INPUT_ERR = [firstNameErr, lastNameErr, emailErr];
 
 // Ordered list of fields and their error elements used by the DOM that come after the jQuery calendar
-const otherFieldList =  [startSel, endSel];
-const otherErrorList = [startTimeError, endTimeError];
+const SEL_INPUT_FIELD =  [selStart, selEnd];
+const SEL_INPUT_ERR = [START_TIME_ERR, END_TIME_ERR];
 
 // Specific error messages for name and email fields (repeat string for simplicity)
-const errorMsgList = [
+const ERR_MESSAGES = [
     "Please enter alphabetic characters only",
     "Please enter alphabetic characters only",
     "Please enter a proper email",
 ];
 
 // Event listeners that recognize when they have been deselected and can be refocused on if submission is attempted and fails because of their field
-firstNameField.addEventListener("blur", function() {blurFunction(errorMsgList[0], firstNameField, firstNameError)});
-firstNameField.addEventListener("focus", focusFunction(regularExp.name, firstNameField, firstNameError));
+firstNameField.addEventListener("blur", function() {onBlurValidator(ERR_MESSAGES[0], firstNameField, firstNameErr)});
+firstNameField.addEventListener("focus", onFocusValidator(RegExpEnum.Name, firstNameField, firstNameErr));
 
-lastNameField.addEventListener("blur", function() {blurFunction(errorMsgList[1], lastNameField, lastNameError)});
-lastNameField.addEventListener("focus", focusFunction(regularExp.name, lastNameField, lastNameError));
+lastNameField.addEventListener("blur", function() {onBlurValidator(ERR_MESSAGES[1], lastNameField, lastNameErr)});
+lastNameField.addEventListener("focus", onFocusValidator(RegExpEnum.Name, lastNameField, lastNameErr));
 
-emailField.addEventListener("blur", function() {blurFunction(errorMsgList[2], emailField, emailError)});
-emailField.addEventListener("focus", focusFunction(regularExp.email, emailField, emailError));
+emailField.addEventListener("blur", function() {onBlurValidator(ERR_MESSAGES[2], emailField, emailErr)});
+emailField.addEventListener("focus", onFocusValidator(RegExpEnum.Email, emailField, emailErr));
 
 
 
-form.addEventListener("submit", (event) => { // On the click of the submit button
+FORM_ELEMENT.addEventListener("submit", (event) => { // On the click of the submit button
     let prevent = false; // Boolean that if set to true, will prevent submission
     let theFocus = false; // Boolean that if false when first error is found, will be set equal to true (focuses on first input error field)
 
     // For loop specifically for the typed input fields (fields prior to jQuery calendar)
-    for (let i = 0; i < typedFieldList.length; i++) {
-        if(blurFunction(errorMsgList[i], typedFieldList[i], typedErrorList[i])) { // If blurFunction() returns true, error is found, prevent submission
+    for (let i = 0; i < KEY_INPUT_FIELD.length; i++) 
+    {
+        if (onBlurValidator(ERR_MESSAGES[i], KEY_INPUT_FIELD[i], KEY_INPUT_ERR[i])) 
+        { // If onBlurValidator() returns true, error is found, prevent submission
             prevent = true;
-            if(!theFocus) { // If this is the first error, set theFocus to true
+
+            if (!theFocus) 
+            { // If this is the first error, set theFocus to true
                 theFocus = true;
-                typedFieldList[i].focus();
+                KEY_INPUT_FIELD[i].focus();
             }
         }
     }
 
     // For jQuery calendar
-    if($("#datePicker").val() == "") { // If no value is selected for the calendar
-        datePickError.textContent = "This field is required";
+    if ($("#datePicker").val() === emptyStr) { // If no value is selected for the calendar
+        DATE_PICKER_ERR.textContent = ErrEnum.Required;
         prevent = true;
-        if(!theFocus) {
+        if (!theFocus) 
+        {
             theFocus = true;
             $("#datePicker").focus();
         }
     }
-    else{
-        datePickError.textContent = ""; // Don't show an error otherwise
+    else
+    {
+        DATE_PICKER_ERR.textContent = emptyStr; // Don't show an error otherwise
     }
 
      // For loop specifically for the other input fields (fields after jQuery calendar)
-    for(let j = 0; j < otherFieldList.length; j++) {
+    for (let j = 0; j < SEL_INPUT_FIELD.length; j++) 
+    {
         
         // If the currently selected value is "Select a time", i.e., no selection has been made
-        if(otherFieldList[j].options[otherFieldList[j].selectedIndex].value == "Select a time"){ 
-            otherErrorList[j].innerHTML = "This field is required";
+        if (SEL_INPUT_FIELD[j].options[SEL_INPUT_FIELD[j].selectedIndex].value === DropdownEnum.Select) /*CHANGED*/
+        { 
+            SEL_INPUT_ERR[j].innerHTML = ErrEnum.Required;
             prevent = true;
-            if(!theFocus) {
+
+            if (!theFocus) 
+            {
                 theFocus = true;
-                otherFieldList[j].focus();
+                SEL_INPUT_FIELD[j].focus();
             }
         }
-        else{
-            otherErrorList[j].innerHTML = "";
+        else
+        {
+            SEL_INPUT_ERR[j].innerHTML = emptyStr;
         }
     }
 
 
-    if(prevent) // If the prevent Boolean is true, prevent submission
+    if (prevent)
+    {
         event.preventDefault();
+    } // If the prevent Boolean is true, prevent submission
 });
 
 
 // Function executed upon deselection of input field
-function blurFunction(theMsg, theField, theError){
-    if(!theField.validity.valid) { // Checking the HTML validators for the input
-        theField.style.borderColor = "red";
-        theField.style.backgroundColor = "#fad4d4";
-        if(!theField.value) { // Checking if the field is empty
-            theError.innerHTML = "This field is required";
+function onBlurValidator(errMessage, blurInputField, blurInputErr){
+    if (!blurInputField.validity.valid) 
+    { // Checking the HTML validators for the input
+        blurInputField.style.borderColor = ColorsEnum.Red;
+        blurInputField.style.backgroundColor = ColorsEnum.LightRed;
+
+        if (!blurInputField.value) 
+        { // Checking if the field is empty
+            blurInputErr.innerHTML = ErrEnum.Required;
         }
-        else{ // The field isn't empty but is improperly formatted
-            theError.innerHTML = theMsg;
+        else
+        { // The field isn't empty but is improperly formatted
+            blurInputErr.innerHTML = errMessage;
         }
+
         return true; // For the if statements in the submission event function
     }
-    else{
-        theField.style.backgroundColor = "white";
+    else
+    {
+        blurInputField.style.backgroundColor = ColorsEnum.White;
         return false; // For the if statements in the submission event function
     }
 }
 
 
 // Function that executes when a field has been selected (only for the "typedFields")
-function focusFunction(expression, theField, theError) {
-    
+function onFocusValidator(regularExp, focusInputField, focusInputErr) 
+{
     // Event listener that what's for an input to occur before executing the function
-    theField.addEventListener("input", function(){
-        if(theField.value.match(expression)){
-            theField.style.borderColor = "green"; // Turns green if the input matches the regex
-            theError.innerHTML = "";
+    focusInputField.addEventListener("input", function()
+    {
+        if (focusInputField.value.match(regularExp))
+        {
+            focusInputField.style.borderColor = ColorsEnum.Green; // Turns green if the input matches the regex
+            focusInputErr.innerHTML = emptyStr;
         }
-        else{
-            theField.style.borderColor = "black";
-            theField.style.backgroundColor = "white";
+        else
+        {
+            focusInputField.style.borderColor = ColorsEnum.Black;
+            focusInputField.style.backgroundColor = ColorsEnum.White;
         }
     });
 }

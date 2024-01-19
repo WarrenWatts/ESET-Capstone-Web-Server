@@ -24,9 +24,9 @@ slideShow(INDEX_START, INDEX_START);
 ** preIndexVal - the index value prior to incrementing in the previous function execution (previous value).
 ** Notes:
 ** This function does not have a return value in the normal sense, although it 
-** does pass the index values, prior to and after incrementing, to a callback function 
+** does pass the index values (prior to and after incrementing) to a callback function 
 ** of itself. The function works by hiding the previously displayed image (all images are 
-** set to "none" by default) and displays the current image. setTimeout is then used to call the
+** set to "none" by default) and displays the current image. setTimeout() is then used to call the
 ** function after a set period of time.
 */
 function slideShow(currIndexVal, prevIndexVal) { 
