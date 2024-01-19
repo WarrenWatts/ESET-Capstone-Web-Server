@@ -32,3 +32,5 @@
 2024-01-16 20:25:00,611 - WARNING - [Line: 176] - User submission failed due to: ['Start time is no longer available. Please select again.']
 2024-01-16 20:27:43,371 - WARNING - [Line: 176] - User submission failed due to: ['Start time is no longer available. Please select again.']
 2024-01-16 20:28:00,343 - WARNING - [Line: 176] - User submission failed due to: ['Start time is no longer available. Please select again.']
+2024-01-19 11:50:30,254 - WARNING - [Line: 176] - User submission failed due to: ['You edited the page code to try and submit something...']
+2024-01-19 11:54:45,618 - WARNING - [Line: 176] - User submission failed due to: ['You edited the page code to try and submit something...']

@@ -25,11 +25,14 @@ const MeridiemEnum = Object.freeze({
 
 const ErrEnum = Object.freeze({
     Required : "This field is required",
+    Name : "Please enter alphabetic characters only",
 })
 
 const RegExpEnum = Object.freeze({
     Email: RegExp(/^[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/),
     Name: RegExp(/^[A-za-z]{1,50}$/),
+    DateFormat : RegExp(/^(?:\d{4})-(?:\d{2})-(?:\d{2})$/),
+
 })
 
 const DropdownEnum = Object.freeze({
@@ -45,13 +48,15 @@ const MinutesEnum = Object.freeze({
 const ColorsEnum = Object.freeze({
     Red : "#ff0000",
     White : "#ffffff",
-    Green : "#008000",
+    BrightGreen : "#43e000",
     Black : "#000000",
     LightRed : "#fad4d4",
+    LightGreen : "#dffad4",
 })
 
 const selStart = document.getElementById("starttime"); // Const for selected start time
 const selEnd = document.getElementById("endtime"); // Const for selected end time
+
 
 
 // Note: much of this code uses events...
@@ -106,23 +111,208 @@ function unixToReadable(timestampVal)
 
     let meridiemVal = (hourVal24Clk >= 12) ? MeridiemEnum.Post : MeridiemEnum.Ante;
     
-    return `${hourVal12Clk}:${minuteVal} ${meridiemVal}`; /*Enum in javascript???*/
+    return `${hourVal12Clk}:${minuteVal} ${meridiemVal}`;
 }
 
 
+class FormInputs 
+{
+    constructor (inputField, inputErr) 
+    {
+        this.inputField = document.getElementById(inputField);
+        this.inputErr = document.getElementById(inputErr);
+        this.formatBool = false;
+        this.emptyBool = true;
+        this.inputField.addEventListener("focus", this);
+        this.inputField.addEventListener("blur", this);
+    }
+}
+
+class TextInputs extends FormInputs {
+    constructor(inputField, inputErr, regEx, errMsg) {
+        super(inputField, inputErr);
+        this.regEx = regEx;
+        this.errMsg = errMsg;
+    }
+
+    onBlurValidator(errMessage, blurInputField, blurInputErr) 
+    {
+        if (!blurInputField.validity.valid) 
+        { // Checking the HTML validators for the input
+            blurInputField.style.outlineColor = ColorsEnum.Black;
+            blurInputField.style.borderColor = ColorsEnum.Red;
+            blurInputField.style.backgroundColor = ColorsEnum.LightRed;
+    
+            if (!blurInputField.value) 
+            { // Checking if the field is empty
+                blurInputErr.innerHTML = ErrEnum.Required;
+            }
+            else
+            { // The field isn't empty but is improperly formatted
+                blurInputErr.innerHTML = errMessage;
+                blurInputField.style.outlineColor = ColorsEnum.BrightGreen;
+            }
+    
+            return true; // For the if statements in the submission event function
+        }
+        else
+        {
+            blurInputField.style.borderColor = ColorsEnum.Black;
+            blurInputField.style.backgroundColor = ColorsEnum.White;
+            return false; // For the if statements in the submission event function
+        }
+    }
+
+    onFocusValidator(regularExp, focusInputField, focusInputErr) 
+    {
+        // Event listener that what's for an input to occur before executing the function
+        focusInputField.addEventListener("input", function()
+        {
+            let properInputBool = null;
+
+            if (focusInputField.value.match(regularExp))
+            { // Turns green if the input matches the regex
+                focusInputField.style.outlineColor = ColorsEnum.BrightGreen;
+                focusInputField.style.backgroundColor = ColorsEnum.White;
+                focusInputErr.innerHTML = emptyStr;
+                properInputBool = true;
+            }
+            else
+            { 
+                focusInputField.style.outlineColor = ColorsEnum.Black;
+                focusInputField.style.backgroundColor = ColorsEnum.White;
+                properInputBool = false;
+            }
+
+            return properInputBool;
+        });
+    }
+
+    handleEvent (e) 
+    {
+        switch (e.type) 
+        {
+            case "blur":
+                this.onBlurValidator(this.errMsg, this.inputField, this.inputErr);
+                break;
+            case "focus":
+                this.formatBool = this.onFocusValidator(this.regEx, this.inputField, this.inputErr);
+                break;
+            default: /* NOTE: Possibly add something to this default case!!! */
+                break;
+        }
+    }
+}
+
+
+class DatePickerInputs extends FormInputs {
+    constructor(inputField, inputErr, errMsg) {
+        super(inputField, inputErr);
+        this.errMsg = errMsg;
+    }
+
+    formatValidator(dateInputField) 
+    {
+        if ($(`#${dateInputField}`).val() === RegExpEnum.DateFormat)
+        {
+            let dateCheck = new Date($(`#${dateInputField}`).val());
+
+            this.formatBool = (isNaN(dateCheck)) ? false : true;
+        }
+        else
+        {
+            this.formatBool = false;
+        }
+    }
+
+    emptyValueValidator(dateInputField)
+    {
+        this.emptyBool = ($(`#${dateInputField}`).val() === emptyStr) ? true : false;
+    }
+
+    onBlurValidator(errMessage, blurInputField, blurInputErr) 
+    {
+        if (!this.formatBool)
+        { // Checking the HTML validators for the input
+            blurInputField.style.outlineColor = ColorsEnum.Black;
+            blurInputField.style.borderColor = ColorsEnum.Red;
+            blurInputField.style.backgroundColor = ColorsEnum.LightRed;
+    
+            if (this.emptyBool)
+            { // Checking if the field is empty
+                blurInputErr.innerHTML = ErrEnum.Required;
+            }
+            else
+            { // The field isn't empty but is improperly formatted
+                blurInputErr.innerHTML = errMessage;
+                blurInputField.style.outlineColor = ColorsEnum.BrightGreen;
+            }
+        }
+        else
+        {
+            blurInputField.style.borderColor = ColorsEnum.Black;
+            blurInputField.style.backgroundColor = ColorsEnum.White;
+        }
+    }
+
+    onFocusValidator(regularExp, focusInputField, focusInputErr) 
+    {
+        // Event listener that what's for an input to occur before executing the function
+        focusInputField.addEventListener("input", function()
+        {
+            formatValidator(focusInputField);
+
+            if (this.formatBool)
+            { // Turns green if the input matches the regex
+                focusInputField.style.outlineColor = ColorsEnum.BrightGreen;
+                focusInputField.style.backgroundColor = ColorsEnum.White;
+                focusInputErr.innerHTML = emptyStr;
+            }
+            else
+            { 
+                focusInputField.style.outlineColor = ColorsEnum.Black;
+                focusInputField.style.backgroundColor = ColorsEnum.White;
+            }
+        });
+    }
+
+    handleEvent (e) 
+    {
+        switch (e.type) 
+        {
+            case "blur":
+                this.formatValidator(this.inputField)
+                this.emptyValueValidator(this.inputField)
+                this.onBlurValidator(this.errMsg, this.inputField, this.inputErr);
+                break;
+            case "focus":
+                this.formatBool = this.onFocusValidator(this.regEx, this.inputField, this.inputErr);
+                break;
+            default: /* NOTE: Possibly add something to this default case!!! */
+                break;
+        }
+    }
+}
 
 // Using the DOM to get each field that needs to be possibly manipulated/changed
 
-const firstNameField = document.getElementById("firstField");
-const firstNameErr = document.getElementById("firstError");
+const firstNameField = "datePicker";
+const firstNameErr = "datePickError";
+const firstErrorMsg = "Bruh Momento";
 
-const lastNameField = document.getElementById("lastField");
+//testCase = new TextInputs(firstNameField, firstNameErr, RegExpEnum.Name, ErrEnum.Name);
+
+
+testCase = new DatePickerInputs(firstNameField, firstNameErr, firstErrorMsg);
+
+
+/*const lastNameField = document.getElementById("lastField");
 const lastNameErr = document.getElementById("lastError");
 
 const emailField = document.getElementById("emailField");
 const emailErr = document.getElementById("emailError");
 
-const FORM_ELEMENT = document.querySelector("form");
+const formElement = document.querySelector("form");
 
 const DATE_PICKER_ERR = document.getElementById("datePickError");
 const START_TIME_ERR = document.getElementById("startTimeError");
@@ -151,11 +341,11 @@ lastNameField.addEventListener("blur", function() {onBlurValidator(ERR_MESSAGES[
 lastNameField.addEventListener("focus", onFocusValidator(RegExpEnum.Name, lastNameField, lastNameErr));
 
 emailField.addEventListener("blur", function() {onBlurValidator(ERR_MESSAGES[2], emailField, emailErr)});
-emailField.addEventListener("focus", onFocusValidator(RegExpEnum.Email, emailField, emailErr));
+emailField.addEventListener("focus", onFocusValidator(RegExpEnum.Email, emailField, emailErr));*/
 
 
 
-FORM_ELEMENT.addEventListener("submit", (event) => { // On the click of the submit button
+/*formElement.addEventListener("submit", (event) => { // On the click of the submit button
     let prevent = false; // Boolean that if set to true, will prevent submission
     let theFocus = false; // Boolean that if false when first error is found, will be set equal to true (focuses on first input error field)
 
@@ -194,7 +384,7 @@ FORM_ELEMENT.addEventListener("submit", (event) => { // On the click of the subm
     {
         
         // If the currently selected value is "Select a time", i.e., no selection has been made
-        if (SEL_INPUT_FIELD[j].options[SEL_INPUT_FIELD[j].selectedIndex].value === DropdownEnum.Select) /*CHANGED*/
+        if (SEL_INPUT_FIELD[j].options[SEL_INPUT_FIELD[j].selectedIndex].value === DropdownEnum.Select) //CHANGED
         { 
             SEL_INPUT_ERR[j].innerHTML = ErrEnum.Required;
             prevent = true;
@@ -216,11 +406,12 @@ FORM_ELEMENT.addEventListener("submit", (event) => { // On the click of the subm
     {
         event.preventDefault();
     } // If the prevent Boolean is true, prevent submission
-});
+});*/
 
 
 // Function executed upon deselection of input field
-function onBlurValidator(errMessage, blurInputField, blurInputErr){
+/* function onBlurValidator(errMessage, blurInputField, blurInputErr)
+{
     if (!blurInputField.validity.valid) 
     { // Checking the HTML validators for the input
         blurInputField.style.borderColor = ColorsEnum.Red;
@@ -262,4 +453,4 @@ function onFocusValidator(regularExp, focusInputField, focusInputErr)
             focusInputField.style.backgroundColor = ColorsEnum.White;
         }
     });
-}
+} */
