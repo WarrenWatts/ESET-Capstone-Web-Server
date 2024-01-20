@@ -26,6 +26,8 @@ const MeridiemEnum = Object.freeze({
 const ErrEnum = Object.freeze({
     Required : "This field is required",
     Name : "Please enter alphabetic characters only",
+    Dated : "Please use hyphenated ISO format",
+    Email : "Please enter a proper email",
 })
 
 const RegExpEnum = Object.freeze({
@@ -56,41 +58,6 @@ const ColorsEnum = Object.freeze({
 
 const selStart = document.getElementById("starttime"); // Const for selected start time
 const selEnd = document.getElementById("endtime"); // Const for selected end time
-
-
-
-// Note: much of this code uses events...
-// Function executes on the loading of the browser window
-let selDate = emptyStr; // Creating an empty string for the selDate variable (global to all functions nested here)
-
-selStart.onchange = function() 
-{ // When a start time is selected, the function will execute
-    selEnd.length = 1; // Resets the length of the end time dropdown options
-    let endTime = dataFromDB[selDate][this.value];
-
-    for (let i = 0; i < endTime.length; i++)
-    {
-        selEnd.options[selEnd.options.length] = 
-                new Option(unixToReadable(endTime[i]), endTime[i]);
-    }
-}       
-
-
-// Function allows unix timestamps to be displayed in a human readable form for selection
-// NOTE: Only worrying about times between 6:00am through 11:00pm in increments of 30 minutes
-function unixToReadable(timestampVal)
-{
-    const dateVal = new Date(parseInt(timestampVal) * timeCorrection); // Multiplied by 1000 to correct the unix timestamp value in Date()
-    let hourVal24Clk = dateVal.getHours();
-
-    let minuteVal = (dateVal.getMinutes() === 30) ? MinutesEnum.Thirty : MinutesEnum.Zero;
-
-    let hourVal12Clk = (hourVal24Clk > 12) ? hourVal24Clk - 12 : hourVal24Clk;
-
-    let meridiemVal = (hourVal24Clk >= 12) ? MeridiemEnum.Post : MeridiemEnum.Ante;
-    
-    return `${hourVal12Clk}:${minuteVal} ${meridiemVal}`;
-}
 
 
 
@@ -134,15 +101,16 @@ class FormInputs
         {
             blurInputField.style.borderColor = ColorsEnum.Black;
             blurInputField.style.backgroundColor = ColorsEnum.White;
+            blurInputErr.innerHTML = emptyStr;
         }
     }
 
-    onFocusValidator(regularExp, focusInputField, focusInputErr) 
+    onFocusValidator(focusInputField, focusInputErr) 
     {
         // Event listener that what's for an input to occur before executing the function
         focusInputField.addEventListener("input", () =>
         {
-            this.formatValidator(focusInputField);
+            this.formatBool = this.formatValidator(focusInputField);
             if (this.formatBool)
             { // Turns green if the input matches the regex
                 focusInputField.style.outlineColor = ColorsEnum.BrightGreen;
@@ -167,7 +135,7 @@ class FormInputs
                 this.onBlurValidator(this.errMsg, this.inputField, this.inputErr);
                 break;
             case "focus":
-                this.formatBool = this.onFocusValidator(this.regEx, this.inputField, this.inputErr);
+                this.formatBool = this.onFocusValidator(this.inputField, this.inputErr);
                 break;
             default: /* NOTE: Possibly add something to this default case!!! */
                 break;
@@ -204,6 +172,7 @@ class DatePickerInputs extends FormInputs
     {
         super(inputField, inputErr, errMsg);
         this.inputField.removeEventListener("blur", this);
+        this.inputField.removeEventListener("focus", this);
 
         $("#datePicker").datepicker({ // Using jQuery's datepicker calendar
             dateFormat: "yy-mm-dd", // ISO format
@@ -233,22 +202,13 @@ class DatePickerInputs extends FormInputs
 
     formatValidator() 
     {
-        console.log($("#datePicker").val())
-        if ($("#datePicker").val() === RegExpEnum.DateFormat)
-        {
-            let dateCheck = new Date($("#datePicker").val());
-
-            this.formatBool = (!isNaN(dateCheck)) ? true : false;
-        }
-        else
-        {
-            this.formatBool = false;
-        }
+        let dateCheck = new Date($("#datePicker").val());
+        this.formatBool = (!isNaN(dateCheck)) ? true : false;
     }
 
     emptyValueValidator()
     {
-        this.emptyBool = (($("#datePicker")).val() === emptyStr) ? false : true;
+        this.emptyBool = (($("#datePicker")).val() === emptyStr) ? true : false;
     }
 }
 
@@ -257,23 +217,52 @@ class DropdownInputs extends FormInputs
     constructor(inputField, inputErr, errMsg)
     {
         super(inputField, inputErr, errMsg);
+        this.inputField.removeEventListener("focus", this);
     }
 
     emptyValueValidator(dropdownField) 
     {
-        if (dropdownField.options[dropdownField.selectedIndex].value === DropdownEnum.Select)
+        if (dropdownField.options[dropdownField.selectedIndex].value === DropdownEnum.Select 
+                || dropdownField.options[dropdownField.selectedIndex].value === DropdownEnum.None)
         {
-            dropdownField.innerHTML = ErrEnum.Required;
+            this.formatBool = false;
+            this.emptyBool = true;
         }
         else
         {
-            dropdownField.innerHTML = emptyStr;
+            this.formatBool = true;
+            this.emptyBool = false;
         }
     }
 }
 
 
 // Using the DOM to get each field that needs to be possibly manipulated/changed
+const fieldNames = [
+    "firstField", 
+    "lastField",
+    "emailField",
+]
+
+const errNames = [
+    "firstError", 
+    "lastError",
+    "emailError",
+]
+
+const regExTextArr = [
+    RegExpEnum.Name,
+    RegExpEnum.Name,
+    RegExpEnum.Email
+]
+
+const errMsgArr = [
+    ErrEnum.Name,
+    ErrEnum.Name,
+    ErrEnum.Email,
+]
+
+let formInputsArr = [];
 
 const firstNameField = "firstField";
 const firstNameErr = "firstError";
@@ -285,12 +274,53 @@ const dateErrorMsg = "Bruh Moment";
 
 const startTimeErr = "startTimeError"
 
-let testCase = new TextInputs(firstNameField, firstNameErr, RegExpEnum.Name, ErrEnum.Name);
+for(let i = 0; i < 3; i++)
+{
+    formInputsArr.push(new TextInputs(fieldNames[i], errNames[i], regExTextArr[i], errMsgArr[i]));
+}
 
 
-let testCase2 = new DatePickerInputs(dateField, dateErr, dateErrorMsg);
+let testCase2 = new DatePickerInputs(dateField, dateErr, ErrEnum.Dated);
 
 let testCase3 = new DropdownInputs("starttime", startTimeErr, emptyStr);
+
+
+
+let selDate = emptyStr; // One of two global variables (non-constant ones).
+
+
+
+function unixToReadable(timestampVal)
+{
+    const dateVal = new Date(parseInt(timestampVal) * timeCorrection); // Multiplied by 1000 to correct the unix timestamp value in Date()
+    let hourVal24Clk = dateVal.getHours();
+
+    let minuteVal = (dateVal.getMinutes() === 30) ? MinutesEnum.Thirty : MinutesEnum.Zero;
+
+    let hourVal12Clk = (hourVal24Clk > 12) ? hourVal24Clk - 12 : hourVal24Clk;
+
+    let meridiemVal = (hourVal24Clk >= 12) ? MeridiemEnum.Post : MeridiemEnum.Ante;
+    
+    return `${hourVal12Clk}:${minuteVal} ${meridiemVal}`;
+}
+
+
+
+selStart.onchange = function() 
+{ // When a start time is selected, the function will execute
+    selEnd.length = 1; // Resets the length of the end time dropdown options
+    let endTime = dataFromDB[selDate][this.value];
+
+    for (let i = 0; i < endTime.length; i++)
+    {
+        selEnd.options[selEnd.options.length] = 
+                new Option(unixToReadable(endTime[i]), endTime[i]);
+    }
+}       
+
+
+// Function allows unix timestamps to be displayed in a human readable form for selection
+// NOTE: Only worrying about times between 6:00am through 11:00pm in increments of 30 minutes
 
 
 /*const lastNameField = document.getElementById("lastField");
