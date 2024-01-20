@@ -60,42 +60,20 @@ const selEnd = document.getElementById("endtime"); // Const for selected end tim
 
 
 // Note: much of this code uses events...
-window.onload = function() 
-{ // Function executes on the loading of the browser window
-    let selDate = emptyStr; // Creating an empty string for the selDate variable (global to all functions nested here)
+// Function executes on the loading of the browser window
+let selDate = emptyStr; // Creating an empty string for the selDate variable (global to all functions nested here)
 
-    $("#datePicker").datepicker({ // Using jQuery's datepicker calendar
-        dateFormat: "yy-mm-dd", // ISO format
-        minDate: "0d",
-        maxDate: "6d",
-        onSelect: function() 
-        { // When a date is selected, the function below will execute
-            selStart.length = 1; // Resets the length of the start time dropdown options 
-            selEnd.length = 1; // Resets the length of the end time dropdown options
-            selDate = this.value;
+selStart.onchange = function() 
+{ // When a start time is selected, the function will execute
+    selEnd.length = 1; // Resets the length of the end time dropdown options
+    let endTime = dataFromDB[selDate][this.value];
 
-            for (let i in dataFromDB[this.value]) 
-            {
-                selStart.options[selStart.options.length] = new Option(unixToReadable(i), i);
-            } // Filling the start time dropdown with start times respective of the date
-
-            selStart.options[0].innerHTML = selEnd.options[0].innerHTML = 
-                    ((selStart.length === 1) ? DropdownEnum.None : DropdownEnum.Select);
-        },
-    });
-
-    selStart.onchange = function() 
-    { // When a start time is selected, the function will execute
-        selEnd.length = 1; // Resets the length of the end time dropdown options
-        let endTime = dataFromDB[selDate][this.value];
-
-        for (let i = 0; i < endTime.length; i++)
-        {
-            selEnd.options[selEnd.options.length] = 
-                    new Option(unixToReadable(endTime[i]), endTime[i]);
-        }
-    }       
-}
+    for (let i = 0; i < endTime.length; i++)
+    {
+        selEnd.options[selEnd.options.length] = 
+                new Option(unixToReadable(endTime[i]), endTime[i]);
+    }
+}       
 
 
 // Function allows unix timestamps to be displayed in a human readable form for selection
@@ -115,120 +93,25 @@ function unixToReadable(timestampVal)
 }
 
 
+
 class FormInputs 
 {
-    constructor (inputField, inputErr) 
+    constructor (inputField, inputErr, errMsg) 
     {
         this.inputField = document.getElementById(inputField);
         this.inputErr = document.getElementById(inputErr);
+
+        this.errMsg = errMsg;
         this.formatBool = false;
         this.emptyBool = true;
+
         this.inputField.addEventListener("focus", this);
         this.inputField.addEventListener("blur", this);
     }
-}
 
-class TextInputs extends FormInputs {
-    constructor(inputField, inputErr, regEx, errMsg) {
-        super(inputField, inputErr);
-        this.regEx = regEx;
-        this.errMsg = errMsg;
-    }
+    formatValidator(dateInputField){}
 
-    onBlurValidator(errMessage, blurInputField, blurInputErr) 
-    {
-        if (!blurInputField.validity.valid) 
-        { // Checking the HTML validators for the input
-            blurInputField.style.outlineColor = ColorsEnum.Black;
-            blurInputField.style.borderColor = ColorsEnum.Red;
-            blurInputField.style.backgroundColor = ColorsEnum.LightRed;
-    
-            if (!blurInputField.value) 
-            { // Checking if the field is empty
-                blurInputErr.innerHTML = ErrEnum.Required;
-            }
-            else
-            { // The field isn't empty but is improperly formatted
-                blurInputErr.innerHTML = errMessage;
-                blurInputField.style.outlineColor = ColorsEnum.BrightGreen;
-            }
-    
-            return true; // For the if statements in the submission event function
-        }
-        else
-        {
-            blurInputField.style.borderColor = ColorsEnum.Black;
-            blurInputField.style.backgroundColor = ColorsEnum.White;
-            return false; // For the if statements in the submission event function
-        }
-    }
-
-    onFocusValidator(regularExp, focusInputField, focusInputErr) 
-    {
-        // Event listener that what's for an input to occur before executing the function
-        focusInputField.addEventListener("input", function()
-        {
-            let properInputBool = null;
-
-            if (focusInputField.value.match(regularExp))
-            { // Turns green if the input matches the regex
-                focusInputField.style.outlineColor = ColorsEnum.BrightGreen;
-                focusInputField.style.backgroundColor = ColorsEnum.White;
-                focusInputErr.innerHTML = emptyStr;
-                properInputBool = true;
-            }
-            else
-            { 
-                focusInputField.style.outlineColor = ColorsEnum.Black;
-                focusInputField.style.backgroundColor = ColorsEnum.White;
-                properInputBool = false;
-            }
-
-            return properInputBool;
-        });
-    }
-
-    handleEvent (e) 
-    {
-        switch (e.type) 
-        {
-            case "blur":
-                this.onBlurValidator(this.errMsg, this.inputField, this.inputErr);
-                break;
-            case "focus":
-                this.formatBool = this.onFocusValidator(this.regEx, this.inputField, this.inputErr);
-                break;
-            default: /* NOTE: Possibly add something to this default case!!! */
-                break;
-        }
-    }
-}
-
-
-class DatePickerInputs extends FormInputs {
-    constructor(inputField, inputErr, errMsg) {
-        super(inputField, inputErr);
-        this.errMsg = errMsg;
-    }
-
-    formatValidator(dateInputField) 
-    {
-        if ($(`#${dateInputField}`).val() === RegExpEnum.DateFormat)
-        {
-            let dateCheck = new Date($(`#${dateInputField}`).val());
-
-            this.formatBool = (isNaN(dateCheck)) ? false : true;
-        }
-        else
-        {
-            this.formatBool = false;
-        }
-    }
-
-    emptyValueValidator(dateInputField)
-    {
-        this.emptyBool = ($(`#${dateInputField}`).val() === emptyStr) ? true : false;
-    }
+    emptyValueValidator(dateInputField){}
 
     onBlurValidator(errMessage, blurInputField, blurInputErr) 
     {
@@ -245,7 +128,6 @@ class DatePickerInputs extends FormInputs {
             else
             { // The field isn't empty but is improperly formatted
                 blurInputErr.innerHTML = errMessage;
-                blurInputField.style.outlineColor = ColorsEnum.BrightGreen;
             }
         }
         else
@@ -258,10 +140,9 @@ class DatePickerInputs extends FormInputs {
     onFocusValidator(regularExp, focusInputField, focusInputErr) 
     {
         // Event listener that what's for an input to occur before executing the function
-        focusInputField.addEventListener("input", function()
+        focusInputField.addEventListener("input", () =>
         {
-            formatValidator(focusInputField);
-
+            this.formatValidator(focusInputField);
             if (this.formatBool)
             { // Turns green if the input matches the regex
                 focusInputField.style.outlineColor = ColorsEnum.BrightGreen;
@@ -294,16 +175,107 @@ class DatePickerInputs extends FormInputs {
     }
 }
 
+
+
+class TextInputs extends FormInputs 
+{
+    constructor(inputField, inputErr, regEx, errMsg) 
+    {
+        super(inputField, inputErr, errMsg);
+        this.regEx = regEx;
+    }
+
+    formatValidator(textInputField)
+    {
+        this.formatBool = (textInputField.value.match(this.regEx)) ? true : false;
+    }
+
+    emptyValueValidator(textInputField)
+    {
+        this.emptyBool = (textInputField.value) ? false : true;
+    }
+}
+
+
+
+class DatePickerInputs extends FormInputs 
+{
+    constructor(inputField, inputErr, errMsg) 
+    {
+        super(inputField, inputErr, errMsg);
+        this.inputField.removeEventListener("blur", this);
+        $("#datePicker").datepicker({ // Using jQuery's datepicker calendar
+            dateFormat: "yy-mm-dd", // ISO format
+            minDate: "0d",
+            maxDate: "6d",
+            onSelect: function() 
+            { // When a date is selected, the function below will execute
+                selStart.length = 1; // Resets the length of the start time dropdown options 
+                selEnd.length = 1; // Resets the length of the end time dropdown options
+                selDate = this.value;
+    
+                for (let i in dataFromDB[this.value]) 
+                {
+                    selStart.options[selStart.options.length] = new Option(unixToReadable(i), i);
+                } // Filling the start time dropdown with start times respective of the date
+    
+                selStart.options[0].innerHTML = selEnd.options[0].innerHTML = 
+                        ((selStart.length === 1) ? DropdownEnum.None : DropdownEnum.Select);
+            },
+            onClose : () => {
+                this.formatValidator(this.inputField);
+                this.emptyValueValidator(this.inputField);
+                this.onBlurValidator(this.errMsg, this.inputField, this.inputErr);
+            },
+        });
+    }
+
+    formatValidator(dateInputField) 
+    {
+        if ($("#datePicker").val() === RegExpEnum.DateFormat)
+        {
+            let dateCheck = new Date($("#datePicker").val());
+
+            this.formatBool = (!isNaN(dateCheck)) ? true : false;
+        }
+        else
+        {
+            this.formatBool = false;
+        }
+    }
+
+    emptyValueValidator(dateInputField)
+    {
+        this.emptyBool = (($("#datePicker")).val() === emptyStr) ? false : true;
+    }
+
+    handleEvent (e) 
+    {
+        switch (e.type) 
+        {
+            case "focus":
+                this.formatBool = this.onFocusValidator(this.regEx, this.inputField, this.inputErr);
+                break;
+            default: /* NOTE: Possibly add something to this default case!!! */
+                break;
+        }
+    }
+}
+
 // Using the DOM to get each field that needs to be possibly manipulated/changed
 
-const firstNameField = "datePicker";
-const firstNameErr = "datePickError";
+const firstNameField = "firstField";
+const firstNameErr = "firstError";
 const firstErrorMsg = "Bruh Momento";
 
-//testCase = new TextInputs(firstNameField, firstNameErr, RegExpEnum.Name, ErrEnum.Name);
+const dateField = "datePicker";
+const dateErr = "datePickError";
+const dateErrorMsg = "Bruh Moment";
+
+let testCase = new TextInputs(firstNameField, firstNameErr, RegExpEnum.Name, ErrEnum.Name);
 
 
-testCase = new DatePickerInputs(firstNameField, firstNameErr, firstErrorMsg);
+let testCase2 = new DatePickerInputs(dateField, dateErr, dateErrorMsg);
 
 
 /*const lastNameField = document.getElementById("lastField");
