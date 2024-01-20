@@ -204,6 +204,7 @@ class DatePickerInputs extends FormInputs
     {
         super(inputField, inputErr, errMsg);
         this.inputField.removeEventListener("blur", this);
+
         $("#datePicker").datepicker({ // Using jQuery's datepicker calendar
             dateFormat: "yy-mm-dd", // ISO format
             minDate: "0d",
@@ -223,15 +224,16 @@ class DatePickerInputs extends FormInputs
                         ((selStart.length === 1) ? DropdownEnum.None : DropdownEnum.Select);
             },
             onClose : () => {
-                this.formatValidator(this.inputField);
-                this.emptyValueValidator(this.inputField);
+                this.formatValidator();
+                this.emptyValueValidator();
                 this.onBlurValidator(this.errMsg, this.inputField, this.inputErr);
             },
         });
     }
 
-    formatValidator(dateInputField) 
+    formatValidator() 
     {
+        console.log($("#datePicker").val())
         if ($("#datePicker").val() === RegExpEnum.DateFormat)
         {
             let dateCheck = new Date($("#datePicker").val());
@@ -244,23 +246,32 @@ class DatePickerInputs extends FormInputs
         }
     }
 
-    emptyValueValidator(dateInputField)
+    emptyValueValidator()
     {
         this.emptyBool = (($("#datePicker")).val() === emptyStr) ? false : true;
     }
+}
 
-    handleEvent (e) 
+class DropdownInputs extends FormInputs 
+{
+    constructor(inputField, inputErr, errMsg)
     {
-        switch (e.type) 
+        super(inputField, inputErr, errMsg);
+    }
+
+    emptyValueValidator(dropdownField) 
+    {
+        if (dropdownField.options[dropdownField.selectedIndex].value === DropdownEnum.Select)
         {
-            case "focus":
-                this.formatBool = this.onFocusValidator(this.regEx, this.inputField, this.inputErr);
-                break;
-            default: /* NOTE: Possibly add something to this default case!!! */
-                break;
+            dropdownField.innerHTML = ErrEnum.Required;
+        }
+        else
+        {
+            dropdownField.innerHTML = emptyStr;
         }
     }
 }
+
 
 // Using the DOM to get each field that needs to be possibly manipulated/changed
 
@@ -272,10 +283,14 @@ const dateField = "datePicker";
 const dateErr = "datePickError";
 const dateErrorMsg = "Bruh Moment";
 
+const startTimeErr = "startTimeError"
+
 let testCase = new TextInputs(firstNameField, firstNameErr, RegExpEnum.Name, ErrEnum.Name);
 
 
 let testCase2 = new DatePickerInputs(dateField, dateErr, dateErrorMsg);
+
+let testCase3 = new DropdownInputs("starttime", startTimeErr, emptyStr);
 
 
 /*const lastNameField = document.getElementById("lastField");
