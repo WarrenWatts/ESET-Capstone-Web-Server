@@ -56,9 +56,10 @@ const ColorsEnum = Object.freeze({
 })
 
 
+
 class FormInputs 
 {
-    constructor (inputField, inputErr, errMsg) 
+    constructor(inputField, inputErr, errMsg) 
     {
         this.inputField = document.getElementById(inputField);
         this.inputErr = document.getElementById(inputErr);
@@ -77,6 +78,8 @@ class FormInputs
 
     onBlurValidator(errMessage, blurInputField, blurInputErr) 
     {
+        let returnBool = true;
+
         if (!this.formatBool)
         { // Checking the HTML validators for the input
             blurInputField.style.outlineColor = ColorsEnum.Black;
@@ -91,6 +94,8 @@ class FormInputs
             { // The field isn't empty but is improperly formatted
                 blurInputErr.innerHTML = errMessage;
             }
+            
+            returnBool = false;
         }
         else
         {
@@ -98,6 +103,8 @@ class FormInputs
             blurInputField.style.backgroundColor = ColorsEnum.White;
             blurInputErr.innerHTML = emptyStr;
         }
+
+        return returnBool;
     }
 
     onFocusValidator(focusInputField, focusInputErr) 
@@ -196,7 +203,6 @@ class DatePickerInputs extends FormInputs
 
     formatValidator() 
     {
-        console.log($("#datePicker").val());
         if ($("#datePicker").val().match(RegExpEnum.DateFormat))
         {
             let dateCheck = new Date($("#datePicker").val());
@@ -281,6 +287,7 @@ const ddErrFields = [
 
 const selStart = document.getElementById(ddInputFields[0]); // Const for selected start time
 const selEnd = document.getElementById(ddInputFields[1]); // Const for selected end time
+const formElement = document.querySelector("form");
 
 const dateInputField = "datePicker";
 const dateErrField = "datePickError";
@@ -299,9 +306,7 @@ for (let j = 0; j < 2; j++)
     formInputObjArr.push(new DropdownInputs(ddInputFields[j], ddErrFields[j], emptyStr));
 }
 
-console.log(formInputObjArr);
 
-// One of two global variables (non-constant ones). /* Make note of what lines this variable is used on after fully commenting!*/
 
 selStart.onchange = function() 
 { // When a start time is selected, the function will execute
@@ -316,6 +321,35 @@ selStart.onchange = function()
 }
 
 
+formElement.addEventListener("submit", function(event) {
+    let preventSubmitBool = false;
+    let focusFirstBool = false;
+
+    for (let i = 0; i < formInputObjArr.length; i++)
+    {
+        let formBool = formInputObjArr[i].onBlurValidator(
+                        formInputObjArr[i].errMsg, 
+                        formInputObjArr[i].inputField, 
+                        formInputObjArr[i].inputErr
+                    );
+        
+        if (!formBool)
+        {
+            preventSubmitBool = true;
+
+            if (!focusFirstBool)
+            {
+                formInputObjArr[i].inputField.focus();
+                focusFirstBool = true;
+            }
+        }
+    }
+
+    if (preventSubmitBool)
+    {
+        event.preventDefault();
+    }
+})
 
 // Function allows unix timestamps to be displayed in a human readable form for selection
 // NOTE: Only worrying about times between 6:00am through 11:00pm in increments of 30 minutes
@@ -332,4 +366,3 @@ function unixToReadable(timestampVal)
     
     return `${hourVal12Clk}:${minuteVal} ${meridiemVal}`;
 }
-
