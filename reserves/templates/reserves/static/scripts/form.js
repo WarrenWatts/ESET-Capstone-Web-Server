@@ -11,6 +11,31 @@
 */
 
 
+/* NOTE:
+** Any conditional operators used were due to the trivial nature of their
+** statement in addition to keepting with the DRY principle.
+*/
+
+
+/* Variable Naming Abbreviations Legend:
+**
+** DB - database
+** str - string
+** regEx || regExp - regular expression
+** obj - object
+** arr - array
+** err - error
+** msg - message
+** sel - select
+** Bool - boolean
+** dd - dropdown
+** val - value
+** 24Clk - 24 hour clock
+** 12Clk - 12 hour clock
+*/
+
+
+
 // Gets the dates, start times, and end times from Django Python
 const dataFromDB = JSON.parse(document.currentScript.
                                     nextElementSibling.textContent);
@@ -57,197 +82,6 @@ const ColorsEnum = Object.freeze({
 
 
 
-class FormInputs 
-{
-    constructor(inputField, inputErr, errMsg) 
-    {
-        this.inputField = document.getElementById(inputField);
-        this.inputErr = document.getElementById(inputErr);
-
-        this.errMsg = errMsg;
-        this.formatBool = false;
-        this.emptyBool = true;
-
-        this.inputField.addEventListener("focus", this);
-        this.inputField.addEventListener("blur", this);
-    }
-
-    formatValidator(dateInputField){}
-
-    emptyValueValidator(dateInputField){}
-
-    onBlurValidator(errMessage, blurInputField, blurInputErr) 
-    {
-        let returnBool = true;
-
-        if (!this.formatBool)
-        { // Checking the HTML validators for the input
-            blurInputField.style.outlineColor = ColorsEnum.Black;
-            blurInputField.style.borderColor = ColorsEnum.Red;
-            blurInputField.style.backgroundColor = ColorsEnum.LightRed;
-    
-            if (this.emptyBool)
-            { // Checking if the field is empty
-                blurInputErr.innerHTML = ErrEnum.Required;
-            }
-            else
-            { // The field isn't empty but is improperly formatted
-                blurInputErr.innerHTML = errMessage;
-            }
-            
-            returnBool = false;
-        }
-        else
-        {
-            blurInputField.style.borderColor = ColorsEnum.Black;
-            blurInputField.style.backgroundColor = ColorsEnum.White;
-            blurInputErr.innerHTML = emptyStr;
-        }
-
-        return returnBool;
-    }
-
-    onFocusValidator(focusInputField, focusInputErr) 
-    {
-        // Event listener that what's for an input to occur before executing the function
-        focusInputField.addEventListener("input", () =>
-        {
-            this.formatBool = this.formatValidator(focusInputField);
-            if (this.formatBool)
-            { // Turns green if the input matches the regex
-                focusInputField.style.outlineColor = ColorsEnum.BrightGreen;
-                focusInputField.style.backgroundColor = ColorsEnum.White;
-                focusInputErr.innerHTML = emptyStr;
-            }
-            else
-            { 
-                focusInputField.style.outlineColor = ColorsEnum.Black;
-                focusInputField.style.backgroundColor = ColorsEnum.White;
-            }
-        });
-    }
-
-    handleEvent (e) 
-    {
-        switch (e.type) 
-        {
-            case "blur":
-                this.formatValidator(this.inputField)
-                this.emptyValueValidator(this.inputField)
-                this.onBlurValidator(this.errMsg, this.inputField, this.inputErr);
-                break;
-            case "focus":
-                this.formatBool = this.onFocusValidator(this.inputField, this.inputErr);
-                break;
-            default: /* NOTE: Possibly add something to this default case!!! */
-                break;
-        }
-    }
-}
-
-
-
-class TextInputs extends FormInputs 
-{
-    constructor(inputField, inputErr, errMsg, regEx) 
-    {
-        super(inputField, inputErr, errMsg);
-        this.regEx = regEx;
-    }
-
-    formatValidator(textInputField)
-    {
-        this.formatBool = (textInputField.value.match(this.regEx)) ? true : false;
-    }
-
-    emptyValueValidator(textInputField)
-    {
-        this.emptyBool = (textInputField.value) ? false : true;
-    }
-}
-
-
-
-class DatePickerInputs extends FormInputs 
-{
-    constructor(inputField, inputErr, errMsg) 
-    {
-        super(inputField, inputErr, errMsg);
-        this.inputField.removeEventListener("blur", this);
-        this.inputField.removeEventListener("focus", this);
-        this.selDate = emptyStr;
-        let self = this;
-
-        $("#datePicker").datepicker({ // Using jQuery's datepicker calendar
-            dateFormat: "yy-mm-dd", // ISO format
-            minDate: "0d",
-            maxDate: "6d",
-            onClose : function() {
-                selStart.length = 1; // Resets the length of the start time dropdown options 
-                selEnd.length = 1; // Resets the length of the end time dropdown options
-                self.selDate = this.value;
-    
-                for (let i in dataFromDB[this.value]) 
-                {
-                    selStart.options[selStart.options.length] = new Option(unixToReadable(i), i);
-                } // Filling the start time dropdown with start times respective of the date
-    
-                selStart.options[0].innerHTML = selEnd.options[0].innerHTML = 
-                        ((selStart.length === 1) ? DropdownEnum.None : DropdownEnum.Select);
-                self.formatValidator();
-                self.emptyValueValidator();
-                self.onBlurValidator(self.errMsg, self.inputField, self.inputErr);
-            },
-        });
-    }
-
-    formatValidator() 
-    {
-        if ($("#datePicker").val().match(RegExpEnum.DateFormat))
-        {
-            let dateCheck = new Date($("#datePicker").val());
-            this.formatBool = (!isNaN(dateCheck)) ? true : false;
-        }
-        else
-        {
-            this.formatBool = false;
-        }
-    }
-
-    emptyValueValidator()
-    {
-        this.emptyBool = (($("#datePicker")).val() === emptyStr) ? true : false;
-    }
-}
-
-
-
-class DropdownInputs extends FormInputs 
-{
-    constructor(inputField, inputErr, errMsg)
-    {
-        super(inputField, inputErr, errMsg);
-        this.inputField.removeEventListener("focus", this);
-    }
-
-    emptyValueValidator(dropdownField) 
-    {
-        if (dropdownField.options[dropdownField.selectedIndex].value === DropdownEnum.Select 
-                || dropdownField.options[dropdownField.selectedIndex].value === DropdownEnum.None)
-        {
-            this.formatBool = false;
-            this.emptyBool = true;
-        }
-        else
-        {
-            this.formatBool = true;
-            this.emptyBool = false;
-        }
-    }
-}
-
-
-
 let formInputObjArr = [];
 
 const textInputFields = [
@@ -274,6 +108,9 @@ const textErrMsgArr = [
     ErrEnum.Email,
 ]
 
+const dateInputField = "datePicker";
+const dateErrField = "datePickError";
+
 const ddInputFields = [
     "starttime",
     "endtime",
@@ -284,33 +121,438 @@ const ddErrFields = [
     "endTimeError",
 ]
 
-
 const selStart = document.getElementById(ddInputFields[0]); // Const for selected start time
 const selEnd = document.getElementById(ddInputFields[1]); // Const for selected end time
 const formElement = document.querySelector("form");
 
-const dateInputField = "datePicker";
-const dateErrField = "datePickError";
 
-for (let i = 0; i < 3; i++)
+
+
+/* Description:
+** FormInputs is the parent class for all form input child/sub classes.
+** It provides a number of base variables, event listeners, and functions
+** that will be utilized by each child class.
+**
+** Parameters:
+** inputField - the id of the input field in the page's HTML
+** inputErr - the id of the input's error field in the page's HTML
+** errMsg - the error message associated with incorrect formatting for this field
+**
+** Notes:
+** The "focus" event occurs when someone selects the input field. The "blur" event occurs
+** when someone clicks off of an input field.
+*/
+class FormInputs 
 {
-    formInputObjArr.push(new TextInputs(textInputFields[i], textErrFields[i], textErrMsgArr[i], textRegExArr[i]));
+    constructor(inputField, inputErr, errMsg) 
+    {
+        this.inputField = document.getElementById(inputField);
+        this.inputErr = document.getElementById(inputErr);
+
+        this.errMsg = errMsg;
+        this.formatBool = false; // Initially empty, so the input cannot have the correct format
+        this.emptyBool = true; // Initially empty
+
+        this.inputField.addEventListener("focus", this);
+        this.inputField.addEventListener("blur", this);
+    }
+
+
+    /* Description:
+    ** The formatValidator() function here is simply a placeholder/base function
+    ** that is replaced by each child classes' own emptyValueValidator()
+    ** function. Each child class will use this function to verify that their input
+    ** is properly formatted, changing the this.formatBool variable accordingly.
+    **
+    ** Parameters:
+    ** formInputField - takes the this.inputField variable to check the specified input's format
+    **
+    ** Notes:
+    ** This function does not have a return value in the normal sense, but instead changes
+    ** the object's this.emptyBool variable value accordingly.
+    */
+    formatValidator(formInputField){}
+
+
+    /* Description:
+    ** The emptyValueValidator() function here is simply a placeholder/base function
+    ** that is replaced by each child classes' own emptyValueValidator()
+    ** function. Each child class will use this function to verify that their input
+    ** is not empty, changing the this.emptyBool variable accordingly.
+    **
+    ** Parameters:
+    ** formInputField - takes the this.inputField variable to check the if the input is empty
+    **
+    ** Notes:
+    ** This function does not have a return value in the normal sense, but instead changes
+    ** the object's this.formatBool variable value accordingly.
+    */
+    emptyValueValidator(formInputField){}
+
+
+    /* Description:
+    ** The onBlurValidator() function is used to display via UI whether or not the user
+    ** has correctly provided their information into a specified form utilizing the DOM.
+    ** Since all form inputs will do this, this function was designed in a way that
+    ** it only has to rely on the Boolean variables this.formatBool and this.emptyBool
+    ** given to each class and sub-class object to work as intended. 
+    **
+    ** Parameters:
+    ** blurInputField - takes the this.inputField variable to change the styling accordingly
+    ** blurInputErr - takes the this.inputErr variable to change the error field text accordingly
+    ** errMessage - takes the this.errMsg variable to substitute the error message for wrong formatting
+    **
+    ** Return:
+    ** Will return a Boolean value of true if this.formatBool is also true, otherwise it returns false.
+    */
+    onBlurValidator(blurInputField, blurInputErr, errMessage) 
+    {
+        let returnBool = true;
+
+        if (!this.formatBool) // The field is improperly formatted
+        {
+            blurInputField.style.outlineColor = ColorsEnum.Black; // Outline for the selector
+            blurInputField.style.borderColor = ColorsEnum.Red;
+            blurInputField.style.backgroundColor = ColorsEnum.LightRed;
+    
+            if (this.emptyBool) // The field is empty
+            {
+                blurInputErr.innerHTML = ErrEnum.Required;
+            }
+            else // The field isn't empty but is improperly formatted
+            {
+                blurInputErr.innerHTML = errMessage;
+            }
+            
+            returnBool = false;
+        }
+        else // The field is properly formatted
+        {
+            blurInputField.style.borderColor = ColorsEnum.Black;
+            blurInputField.style.backgroundColor = ColorsEnum.White;
+            blurInputErr.innerHTML = emptyStr;
+        }
+
+        return returnBool;
+    }
+
+
+    /* Description:
+    ** The onFocusValidator() function
+    **
+    ** Parameters:
+    ** focusInputField - takes the this.inputField variable to change the styling accordingly
+    ** focusInputErr - takes the this.inputErr variable to change the error field text accordingly
+    **
+    ** Notes:
+    ** This function ended up only being utilized, in this case, for the TextInputs sub-class.
+    ** This is due in one part because it is not necessary for the date or dropdown selectors,
+    ** and in another part because of the errors it was creating.
+    */
+    onFocusValidator(focusInputField, focusInputErr) 
+    {
+        // Event listener that waits for an input to occur before executing the function
+        focusInputField.addEventListener("input", () =>
+        {
+            this.formatBool = this.formatValidator(focusInputField);
+            if (this.formatBool)
+            {
+                focusInputField.style.outlineColor = ColorsEnum.BrightGreen;
+                focusInputField.style.backgroundColor = ColorsEnum.White;
+                focusInputErr.innerHTML = emptyStr;
+            }
+            else
+            { 
+                focusInputField.style.outlineColor = ColorsEnum.Black;
+                focusInputField.style.backgroundColor = ColorsEnum.White;
+            }
+        });
+    }
+
+
+    /* Description of function
+    **
+    **
+    ** Parameters:
+    ** count – number of ...
+    ** textptr – pointer to ...
+    **
+    ** Return:
+    ** 0 on success, error code on failure
+    **
+    ** Notes:
+    ** ???
+    */
+    handleEvent (e) 
+    {
+        switch (e.type) 
+        {
+            case "blur":
+                this.formatValidator(this.inputField)
+                this.emptyValueValidator(this.inputField)
+                this.onBlurValidator(this.inputField, this.inputErr, this.errMsg);
+                break;
+            case "focus":
+                this.formatBool = this.onFocusValidator(this.inputField, this.inputErr);
+                break;
+            default:
+                break;
+        } /* End of switch statement */
+    }
 }
 
 
-formInputObjArr.push(new DatePickerInputs(dateInputField, dateErrField, ErrEnum.Dated));
+
+
+/* Description:
+**
+**
+** Parameters:
+** inputField - the id of the input field in the page's HTML
+** inputErr - the id of the input's error field in the page's HTML
+** errMsg - the error message associated with incorrect formatting for this field
+** regEx - the regular expression associated with the text field to check its format
+**
+** Notes:
+** ???
+*/
+class TextInputs extends FormInputs 
+{
+    constructor(inputField, inputErr, errMsg, regEx) 
+    {
+        super(inputField, inputErr, errMsg);
+        this.regEx = regEx;
+    }
+
+
+    formatValidator(textInputField)
+    {
+        this.formatBool = (textInputField.value.match(this.regEx)) ? true : false;
+    }
+
+
+    emptyValueValidator(textInputField)
+    {
+        this.emptyBool = (textInputField.value) ? false : true;
+    }
+}
+
+
+
+
+/* Description:
+** Another child class of the FormInputs parent class, the DatePickerInputs class
+** was created to utilize its own variations of the validator functions that differ
+** from the other child classes. However, this sub-class differs from all the others
+** in that it does not utilize base HTML structures, but instead jQuery.
+**
+** Parameters:
+** *Are the same as the parent class*
+**
+** Notes:
+** Since this sub-class is based around the jQuery Datepicker element,
+** both the "blur" and "focus" events were removed from the class in the constructor.
+** This is due to the jQuery element's inability to function properly with the regular
+** JavaScript event listeners.
+*/
+class DatePickerInputs extends FormInputs 
+{
+    constructor(inputField, inputErr, errMsg) 
+    {
+        super(inputField, inputErr, errMsg);
+        this.inputField.removeEventListener("blur", this);
+        this.inputField.removeEventListener("focus", this);
+        this.selDate = emptyStr;
+        let self = this;
+
+
+        /* Description:
+        ** This is the jQuery Datepicker element. It is being declared
+        ** here in the constructor because it can only be called once,
+        ** otherwise it resets itself and all its previous parameters.
+        ** Inside this declaration is an anonymous function that executes
+        ** once the input for the DatePicker element has been closed/
+        ** de-selected. In doing this, it will fill out start time dropdown
+        ** according to the date, as well as verify the format of the date.
+        **
+        ** Parameters:
+        ** dateFormat - specifies the input format for the date (currently using ISO format)
+        ** minDate - the minimum selectable date (set to the current day)
+        ** maxDate - the maximum selectable date (set to have 7 selectable days)
+        ** onClose : function() - the anonymous function discussed in the description
+        **
+        ** Notes:
+        ** The formatValidator(), emptyValueValidator(), and onBlurValidator() functions are
+        ** still utilized and checked in the anonymous function (done at the function's end).
+        ** This anonymous function also considers the possibility of no times being available
+        ** for a selected day due to them all being taken.
+        */
+        $("#datePicker").datepicker({
+            dateFormat: "yy-mm-dd",
+            minDate: "0d",
+            maxDate: "6d",
+            onClose : function() {
+                
+                // Resets the length of the dropdown options (frees memory)
+                selStart.length = 1; 
+                selEnd.length = 1;
+
+                self.selDate = this.value;
+    
+                for (let i in dataFromDB[this.value]) 
+                {
+                    selStart.options[selStart.options.length] = new Option(unixToReadable(i), i);
+                }
+                
+                /* Notes:
+                ** If there are no start times AT ALL, then there cannot be any end times either.
+                ** Therefore, we can assign the result from this conditional operator to both 
+                ** the selStart and selEnd option text fields. 
+                */
+                selStart.options[0].innerHTML = selEnd.options[0].innerHTML = 
+                        ((selStart.length === 1) ? DropdownEnum.None : DropdownEnum.Select);
+                
+                self.formatValidator();
+                self.emptyValueValidator();
+                self.onBlurValidator(self.inputField, self.inputErr, self.errMsg);
+            },
+        });
+    }
+
+
+    /* Notes:
+    ** No parameters used in either the formatValidator() or emptyValueValidator() functions
+    ** This works because the event listeners for both "blur" and "focus" were removed since 
+    ** this is a jQuery object that has its own set of event listener values.
+    */
+    formatValidator() 
+    {
+        if ($("#datePicker").val().match(RegExpEnum.DateFormat))
+        {
+            let dateCheck = new Date($("#datePicker").val());
+
+            this.formatBool = (!isNaN(dateCheck)) ? true : false;
+        }
+        else
+        {
+            this.formatBool = false;
+        }
+    }
+
+
+    emptyValueValidator()
+    {
+        this.emptyBool = (($("#datePicker")).val() === emptyStr) ? true : false;
+    }
+}
+
+
+
+
+/* Description:
+** Another child class of the FormInputs parent class, the DropdownInputs class
+** was created to utilize its own variations of the validator functions that differ
+** from the other child classes.
+**
+** Parameters:
+** *Are the same as the parent class*
+**
+** Notes:
+** The "focus" event and the onFocusValidator() function are not needed for this class.
+** This is why the event listener is removed for "focus" in the constructor.
+*/
+class DropdownInputs extends FormInputs 
+{
+    constructor(inputField, inputErr, errMsg)
+    {
+        super(inputField, inputErr, errMsg);
+        this.inputField.removeEventListener("focus", this);
+    }
+
+    
+    /* Notes:
+    ** Checks if the current option selected after the cursor de-selects the dropdown is either 
+    ** "Select a time" or "None Available". If this is the case, then the format is incorrect 
+    ** and the dropdown selection can be said to be empty since nothing of true value has 
+    ** been selected.
+    ** The formatValidator() function is not utilized in this sub-class since the dropdown 
+    ** selections are already formatted (typed input is not required and isn't possible 
+    ** without manipulating the HTML).
+    */
+    emptyValueValidator(dropdownField) 
+    {
+        if (dropdownField.options[dropdownField.selectedIndex].value === DropdownEnum.Select 
+                || dropdownField.options[dropdownField.selectedIndex].value === DropdownEnum.None)
+        {
+            this.formatBool = false;
+            this.emptyBool = true;
+        }
+        else
+        {
+            this.formatBool = true;
+            this.emptyBool = false;
+        }
+    }
+}
+
+
+
+/* Notes:
+** Although not a function, displayed below is the code for
+** the initialization of each FormInput object through their
+** designated subclasses. Since the form will also be in the
+** same order, they are pushed into the formInputObjArr array 
+*/
+for (let i = 0; i < 3; i++)
+{
+    formInputObjArr.push(new TextInputs(
+                        textInputFields[i], 
+                        textErrFields[i], 
+                        textErrMsgArr[i], 
+                        textRegExArr[i],
+                    ));              
+}
+
+
+formInputObjArr.push(new DatePickerInputs(
+                        dateInputField, 
+                        dateErrField, 
+                        ErrEnum.Dated,
+                    ));
 
 
 for (let j = 0; j < 2; j++)
 {
-    formInputObjArr.push(new DropdownInputs(ddInputFields[j], ddErrFields[j], emptyStr));
+    formInputObjArr.push(new DropdownInputs(
+                            ddInputFields[j], 
+                            ddErrFields[j], 
+                            emptyStr,
+                        ));
 }
 
 
 
+/* Description:
+** An anonymous function connected to an onchange event listener,
+** this function fills out the dropdown menu of the selEnd dropdown field
+** with option values according to the currently selected selStart option
+** value. Each time a new start time is selected, the function resets
+** the end time options.
+**
+** Parameters:
+** No parameters are present, however, an onchange event
+** must occur for this function to be triggered.
+**
+** Notes:
+** Using formInputObjArr[3] directly here since the the date object
+** will ALWAYS be the fourth value in the array of form inputs.
+*/
 selStart.onchange = function() 
-{ // When a start time is selected, the function will execute
-    selEnd.length = 1; // Resets the length of the end time dropdown options
+{
+    // Resets the length of the end time dropdown options (frees memory)
+    selEnd.length = 1;
+
+    // "this" being the currently selected selStart value
     let endTime = dataFromDB[formInputObjArr[3].selDate][this.value];
 
     for (let i = 0; i < endTime.length; i++)
@@ -321,16 +563,36 @@ selStart.onchange = function()
 }
 
 
-formElement.addEventListener("submit", function(event) {
+
+/* Description:
+** An anonymous function on an event listener for a "submit" event,
+** this function verifies whether or not all the fields have been
+** filled out and filled out properly (properly formatted). If not,
+** the incorrect fields are displayed using the onBlurValidator()
+** function. The first incorrect field in the form will be "focused",
+** meaning your cursor is within said field.
+**
+** Parameters:
+** event - occurs when a "submit" event is registered
+**
+** Notes:
+** The default that we are preventing, in the case of an error,
+** is the submission of the form.
+** This function makes use of the onBlurValidator() function's
+** return values in order to verify whether or not the form is
+** ready for submission.
+*/
+formElement.addEventListener("submit", function(event) 
+{
     let preventSubmitBool = false;
     let focusFirstBool = false;
 
     for (let i = 0; i < formInputObjArr.length; i++)
     {
-        let formBool = formInputObjArr[i].onBlurValidator(
-                        formInputObjArr[i].errMsg, 
+        let formBool = formInputObjArr[i].onBlurValidator( 
                         formInputObjArr[i].inputField, 
-                        formInputObjArr[i].inputErr
+                        formInputObjArr[i].inputErr,
+                        formInputObjArr[i].errMsg,
                     );
         
         if (!formBool)
@@ -349,13 +611,31 @@ formElement.addEventListener("submit", function(event) {
     {
         event.preventDefault();
     }
-})
+});
 
-// Function allows unix timestamps to be displayed in a human readable form for selection
-// NOTE: Only worrying about times between 6:00am through 11:00pm in increments of 30 minutes
+
+
+/* Description:
+** The unixToReadable() function allows unix timestamps to be 
+** displayed in a human readable form for selection.
+**
+** Parameters:
+** timeStampVal - the unix timestamp value sent to the function
+**
+** Return:
+** returns a string of the time in the format... 9:30 P.M.
+**
+** Notes:
+** We are ONLY concerned with times between 6:00am and 11:00pm 
+** in increments of 30 minutes, which is why this function works
+** properly with such simplicity.
+*/
 function unixToReadable(timestampVal)
 {
-    const dateVal = new Date(parseInt(timestampVal) * timeCorrection); // Multiplied by 1000 to correct the unix timestamp value in Date()
+    // Multiplied by 1000 to correct the unix timestamp value in Date()
+    const dateVal = new Date(parseInt(timestampVal) * timeCorrection);
+    
+    // .getHours() uses a 24 hour clock, i.e., values from 0 to 23.
     let hourVal24Clk = dateVal.getHours();
 
     let minuteVal = (dateVal.getMinutes() === 30) ? MinutesEnum.Thirty : MinutesEnum.Zero;

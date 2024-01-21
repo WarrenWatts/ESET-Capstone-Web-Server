@@ -18,7 +18,8 @@ const DELAY = 10000; // Timer delay in milliseconds
 slideShow(INDEX_START, INDEX_START);
 
 
-/* 
+/* Description:
+** slideshow() is a function used to create the image slideshow effect seen on the home page.
 ** Parameters: 
 ** currIndexVal - the index value after incrementing in the previous function execution (current value).
 ** preIndexVal - the index value prior to incrementing in the previous function execution (previous value).
