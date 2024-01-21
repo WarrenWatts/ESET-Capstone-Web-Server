@@ -43,6 +43,13 @@ const dataFromDB = JSON.parse(document.currentScript.
 const timeCorrection = 1000;
 const emptyStr = "";
 
+/* Notes:
+** Below are a number of JavaScript objects
+** made to function as Enums (to an extent).
+** This was done in order to follow the DRY
+** principle, but also to avoid inserting 
+** "magic" values or numbers.
+*/
 const MeridiemEnum = Object.freeze({
     Ante : "A.M.",
     Post : "P.M.",
@@ -81,9 +88,16 @@ const ColorsEnum = Object.freeze({
 })
 
 
-
+// Array for form input objects
 let formInputObjArr = [];
 
+
+/* Notes:
+** Below are a number of arrays and variables
+** that contain the ids of HTML elements and 
+** other important information necessary to
+** create each of the input objects for the form.
+*/
 const textInputFields = [
     "firstField", 
     "lastField",
@@ -121,8 +135,12 @@ const ddErrFields = [
     "endTimeError",
 ]
 
-const selStart = document.getElementById(ddInputFields[0]); // Const for selected start time
-const selEnd = document.getElementById(ddInputFields[1]); // Const for selected end time
+// Const for selected start time
+const selStart = document.getElementById(ddInputFields[0]);
+
+// Const for selected end time
+const selEnd = document.getElementById(ddInputFields[1]);
+
 const formElement = document.querySelector("form");
 
 
@@ -238,7 +256,11 @@ class FormInputs
 
 
     /* Description:
-    ** The onFocusValidator() function
+    ** The onFocusValidator() function is one that activates on selection of an input field.
+    ** Once the input field has been selected, another event listener is added to see if
+    ** the input field has received any input. If this is the case, it checks if the current input
+    ** text matches the format or not. It uses the DOM to signify to the user if their
+    ** input is correct by highlighting the textbox is green.
     **
     ** Parameters:
     ** focusInputField - takes the this.inputField variable to change the styling accordingly
@@ -248,14 +270,16 @@ class FormInputs
     ** This function ended up only being utilized, in this case, for the TextInputs sub-class.
     ** This is due in one part because it is not necessary for the date or dropdown selectors,
     ** and in another part because of the errors it was creating.
+    ** This function is actually broken at the moment due to JavaScript's "this" keyword working
+    ** differently than other languages, making it scuffed.
     */
     onFocusValidator(focusInputField, focusInputErr) 
     {
         // Event listener that waits for an input to occur before executing the function
         focusInputField.addEventListener("input", () =>
         {
-            this.formatBool = this.formatValidator(focusInputField);
-            if (this.formatBool)
+            let checkBool = this.formatValidator(focusInputField);
+            if (checkBool)
             {
                 focusInputField.style.outlineColor = ColorsEnum.BrightGreen;
                 focusInputField.style.backgroundColor = ColorsEnum.White;
@@ -271,17 +295,16 @@ class FormInputs
 
 
     /* Description of function
-    **
+    ** This function simply handles the events from the event listener as they come in.
+    ** It does this by making use of a switch statement.
     **
     ** Parameters:
-    ** count – number of ...
-    ** textptr – pointer to ...
-    **
-    ** Return:
-    ** 0 on success, error code on failure
+    ** e - the specific event from the event listener
     **
     ** Notes:
-    ** ???
+    ** Although each child class has this, if they simply remove their event listeners
+    ** in their constructors (if they don't need the event or it is detrimental to them),
+    ** while still allowing the code to be functional.
     */
     handleEvent (e) 
     {
@@ -305,16 +328,16 @@ class FormInputs
 
 
 /* Description:
-**
+** Another child class of the FormInputs parent class, the TextInputs class
+** was created to utilize its own variations of the validator functions that differ
+** from the other child classes.
 **
 ** Parameters:
-** inputField - the id of the input field in the page's HTML
-** inputErr - the id of the input's error field in the page's HTML
-** errMsg - the error message associated with incorrect formatting for this field
+** *Are the same as the parent class except...*
 ** regEx - the regular expression associated with the text field to check its format
 **
 ** Notes:
-** ???
+** This sub-class most aligns with the base format setup in the FormInputs parent class.
 */
 class TextInputs extends FormInputs 
 {
@@ -324,10 +347,18 @@ class TextInputs extends FormInputs
         this.regEx = regEx;
     }
 
-
+    /* Notes:
+    ** This formatValidator has a return function in order to be handled by the
+    ** onFocusValidator()'s anonymous function. Otherwise, the value of
+    ** this.formatBool cannot be utilized. Since this is a TextInputs specific
+    ** problem and no other sub-classes utilize the onFocusValidator() function,
+    ** the return value is being placed here instead of FormInputs.
+    */
     formatValidator(textInputField)
     {
         this.formatBool = (textInputField.value.match(this.regEx)) ? true : false;
+
+        return this.formatBool;
     }
 
 
