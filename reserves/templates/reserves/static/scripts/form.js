@@ -13,7 +13,7 @@
 
 /* NOTE:
 ** Any conditional operators used were due to the trivial nature of their
-** statement in addition to keepting with the DRY principle.
+** statement in addition to keeping with the DRY principle.
 */
 
 
@@ -55,6 +55,7 @@ const MeridiemEnum = Object.freeze({
     Post : "P.M.",
 })
 
+// Enum for the an input fields specific formatting error message
 const ErrEnum = Object.freeze({
     Required : "This field is required",
     Name : "Please enter alphabetic characters only",
@@ -68,6 +69,7 @@ const RegExpEnum = Object.freeze({
     DateFormat : RegExp(/^(\d{4})-(\d{2})-(\d{2})$/),
 })
 
+// Enum for the two default dropdown select options
 const DropdownEnum = Object.freeze({
     Select : "Select a time",
     None : "None available",
@@ -97,6 +99,8 @@ let formInputObjArr = [];
 ** that contain the ids of HTML elements and 
 ** other important information necessary to
 ** create each of the input objects for the form.
+** Each input field on the form will always be in
+** the same order, so arrays of the like make sense.
 */
 const textInputFields = [
     "firstField", 
@@ -180,7 +184,8 @@ class FormInputs
     ** The formatValidator() function here is simply a placeholder/base function
     ** that is replaced by each child classes' own emptyValueValidator()
     ** function. Each child class will use this function to verify that their input
-    ** is properly formatted, changing the this.formatBool variable accordingly.
+    ** is properly formatted in their own unique way. The this.formatBool variable
+    ** is then changed accordingly to signify the status of the input field's format.
     **
     ** Parameters:
     ** formInputField - takes the this.inputField variable to check the specified input's format
@@ -195,8 +200,9 @@ class FormInputs
     /* Description:
     ** The emptyValueValidator() function here is simply a placeholder/base function
     ** that is replaced by each child classes' own emptyValueValidator()
-    ** function. Each child class will use this function to verify that their input
-    ** is not empty, changing the this.emptyBool variable accordingly.
+    ** function. Each child class will use this function to check whether or not their input
+    ** is empty in their own unique way. The this.emptyBool variable is then changed accordingly 
+    ** to signify the state of the input field.
     **
     ** Parameters:
     ** formInputField - takes the this.inputField variable to check the if the input is empty
@@ -209,11 +215,11 @@ class FormInputs
 
 
     /* Description:
-    ** The onBlurValidator() function is used to display via UI whether or not the user
-    ** has correctly provided their information into a specified form utilizing the DOM.
-    ** Since all form inputs will do this, this function was designed in a way that
-    ** it only has to rely on the Boolean variables this.formatBool and this.emptyBool
-    ** given to each class and sub-class object to work as intended. 
+    ** The onBlurValidator() function is used to display (via the Document Object Model)
+    ** whether or not the user has correctly provided their information into a specified 
+    ** input field. (Is manipulating the UI.) Since all field inputs on the form will do this, 
+    ** this function was designed in a way that it only has to rely on the Boolean variables 
+    ** this.formatBool and this.emptyBool (given to each class and sub-class object) to work as intended. 
     **
     ** Parameters:
     ** blurInputField - takes the this.inputField variable to change the styling accordingly
@@ -222,6 +228,10 @@ class FormInputs
     **
     ** Return:
     ** Will return a Boolean value of true if this.formatBool is also true, otherwise it returns false.
+    **
+    ** Notes:
+    ** The return value here is used specifically for validation (both visual and non-visual) when
+    ** form submission is attempted.
     */
     onBlurValidator(blurInputField, blurInputErr, errMessage) 
     {
@@ -258,8 +268,8 @@ class FormInputs
     /* Description:
     ** The onFocusValidator() function is one that activates on selection of an input field.
     ** Once the input field has been selected, another event listener is added to see if
-    ** the input field has received any input. If this is the case, it checks if the current input
-    ** text matches the format or not. It uses the DOM to signify to the user if their
+    ** the input field has received any input. If input is received, it checks if the current input
+    ** text matches the format or not for the input field. It uses the DOM to signify to the user if their
     ** input is correct by highlighting the textbox is green.
     **
     ** Parameters:
@@ -270,8 +280,6 @@ class FormInputs
     ** This function ended up only being utilized, in this case, for the TextInputs sub-class.
     ** This is due in one part because it is not necessary for the date or dropdown selectors,
     ** and in another part because of the errors it was creating.
-    ** This function is actually broken at the moment due to JavaScript's "this" keyword working
-    ** differently than other languages, making it scuffed.
     */
     onFocusValidator(focusInputField, focusInputErr) 
     {
@@ -295,16 +303,17 @@ class FormInputs
 
 
     /* Description of function
-    ** This function simply handles the events from the event listener as they come in.
+    ** This function simply handles the events from the event listeners as they come in.
     ** It does this by making use of a switch statement.
     **
     ** Parameters:
     ** e - the specific event from the event listener
     **
     ** Notes:
-    ** Although each child class has this, if they simply remove their event listeners
+    ** Although each child class has this, they can simply remove their event listeners
     ** in their constructors (if they don't need the event or it is detrimental to them),
-    ** while still allowing the code to be functional.
+    ** while still allowing their code to function as intended. If there are no events,
+    ** then events don't need to be handled.
     */
     handleEvent (e) 
     {
@@ -330,7 +339,9 @@ class FormInputs
 /* Description:
 ** Another child class of the FormInputs parent class, the TextInputs class
 ** was created to utilize its own variations of the validator functions that differ
-** from the other child classes.
+** from the other child classes. Validation here occurs through the use of regular
+** expressions according to the text field's type as well as through empty string
+** comparison.
 **
 ** Parameters:
 ** *Are the same as the parent class except...*
@@ -375,7 +386,9 @@ class TextInputs extends FormInputs
 ** Another child class of the FormInputs parent class, the DatePickerInputs class
 ** was created to utilize its own variations of the validator functions that differ
 ** from the other child classes. However, this sub-class differs from all the others
-** in that it does not utilize base HTML structures, but instead jQuery.
+** in that it does not utilize base HTML structures, but instead jQuery. Validation 
+** here occurs by checking if an input has been formatted using ISO standards and
+** after de-selecting the input field, if there is any text in the field.
 **
 ** Parameters:
 ** *Are the same as the parent class*
@@ -483,7 +496,8 @@ class DatePickerInputs extends FormInputs
 /* Description:
 ** Another child class of the FormInputs parent class, the DropdownInputs class
 ** was created to utilize its own variations of the validator functions that differ
-** from the other child classes.
+** from the other child classes. This class utilizes only the emptyValueValidator()
+** function to validate the field's input.
 **
 ** Parameters:
 ** *Are the same as the parent class*
@@ -531,8 +545,9 @@ class DropdownInputs extends FormInputs
 /* Notes:
 ** Although not a function, displayed below is the code for
 ** the initialization of each FormInput object through their
-** designated subclasses. Since the form will also be in the
-** same order, they are pushed into the formInputObjArr array 
+** designated sub-classes. Since the form will ALWAYS be in the
+** same order, each object is pushed into the formInputObjArr array
+** in this fashion.
 */
 for (let i = 0; i < 3; i++)
 {
@@ -565,17 +580,18 @@ for (let j = 0; j < 2; j++)
 
 /* Description:
 ** An anonymous function connected to an onchange event listener,
-** this function fills out the dropdown menu of the selEnd dropdown field
-** with option values according to the currently selected selStart option
-** value. Each time a new start time is selected, the function resets
-** the end time options.
+** this function fills out the dropdown menu of the selEnd (end time) 
+** dropdown field with option values according to the currently selected 
+** selStart (start time) option value. Each time a new start time is 
+** selected, the function resets the end time options.
 **
 ** Parameters:
 ** No parameters are present, however, an onchange event
-** must occur for this function to be triggered.
+** (selection in the dropdown made) must occur for this function 
+** to be triggered.
 **
 ** Notes:
-** Using formInputObjArr[3] directly here since the the date object
+** Using formInputObjArr[3] directly here since the date object
 ** will ALWAYS be the fourth value in the array of form inputs.
 */
 selStart.onchange = function() 
@@ -663,7 +679,11 @@ formElement.addEventListener("submit", function(event)
 */
 function unixToReadable(timestampVal)
 {
-    // Multiplied by 1000 to correct the unix timestamp value in Date()
+    /* Notes:
+    ** Multiplied by the timeCorrection variable, which is a value of 1000.
+    ** This is done because the unix timestamp values in Date() are measured
+    ** in milliseconds instead of seconds like normal unix timestamp values.
+    */
     const dateVal = new Date(parseInt(timestampVal) * timeCorrection);
     
     // .getHours() uses a 24 hour clock, i.e., values from 0 to 23.

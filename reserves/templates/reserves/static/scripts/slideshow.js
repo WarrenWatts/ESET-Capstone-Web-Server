@@ -19,10 +19,12 @@ slideShow(INDEX_START, INDEX_START);
 
 
 /* Description:
-** slideshow() is a function used to create the image slideshow effect seen on the home page.
+** The slideshow() function is used to create the image slideshow effect seen on the home page.
+**
 ** Parameters: 
 ** currIndexVal - the index value after incrementing in the previous function execution (current value).
 ** preIndexVal - the index value prior to incrementing in the previous function execution (previous value).
+**
 ** Notes:
 ** This function does not have a return value in the normal sense, although it 
 ** does pass the index values (prior to and after incrementing) to a callback function 
@@ -45,12 +47,11 @@ function slideShow(currIndexVal, prevIndexVal) {
     prevIndexVal = currIndexVal;
     currIndexVal++;
 
-    /* 
-    ** Notes:
+    /* Notes:
     ** setTimeout() is an asynchronous Web API function. What this means is that once it is called, the function
     ** which its caller is in will continue/finish executing. The API specifically for this function will 
     ** set a timer, the time being specified by the variable DELAY. Once this timer has run its course, 
-    ** it will place the callback function, the first parameter, in the event loop, which will then be placed 
+    ** it will place the callback function, the first parameter, in the event loop which will then be placed 
     ** on the stack when the stack is empty.
     ** The .bind() function allows a new function to be created, the null parameter stating that this function
     ** has global context.
