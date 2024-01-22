@@ -1,3 +1,15 @@
+"""/* Texas A&M University
+** Electronic Systems Engineering Technology
+** ESET-420 Engineering Technology Capstone II
+** Author: Warren Watts
+** File: forms.py
+** --------
+** Python code ............
+*/"""
+
+
+
+# Imports
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django import forms
@@ -8,8 +20,10 @@ import datetime
 import re
 
 
+
 # Constants
 TIME_STR = "is no longer available. Please select again."
+
 
 
 # Function that validates that the date is in the specified date range
@@ -22,6 +36,19 @@ def validateDateRange(date):
         raise ValidationError("This date is no longer available. Please select again.")
 
 
+
+"""/* Description:
+**
+**
+** Parameters:
+**
+**
+** Return:
+**
+**
+** Notes:
+**
+*/"""
 class ReservesForm(ModelForm):
     date = forms.DateField(input_formats=['%Y-%m-%d'], validators=[validateDateRange]) # Ensures date is in ISO format + uses validator
     
@@ -37,6 +64,20 @@ class ReservesForm(ModelForm):
             "accessCode",
         ]
 
+
+
+    """/* Description:
+    **
+    **
+    ** Parameters:
+    **
+    **
+    ** Return:
+    **
+    **
+    ** Notes:
+    **
+    */"""
     # Ensures that start time and end time selected actually exist and are available
     def clean(self):
         cleaned_data = super().clean()

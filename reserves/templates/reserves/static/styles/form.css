@@ -268,6 +268,7 @@ label {
 
 @media all and (max-width: 1024px) {
 
+  main {margin-top: 60px;}
   body {max-width: 100%;}
 
   header {height: 60px;}
@@ -313,4 +314,12 @@ label {
 
   .db-error-text {line-height: 15px;}
 
+}
+
+@media all and (max-width: 776px) {
+  main {
+    max-width: 100%;
+    justify-content: stretch;
+    align-self: stretch;
+  }
 }

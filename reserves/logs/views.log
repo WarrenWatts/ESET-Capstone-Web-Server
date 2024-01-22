@@ -89,3 +89,5 @@
 2024-01-20 14:30:43,085 - WARNING - [Line: 176] - User submission failed due to: ['Enter a whole number.']
 2024-01-20 14:30:48,820 - WARNING - [Line: 176] - User submission failed due to: ['Enter a whole number.']
 2024-01-20 14:31:50,492 - WARNING - [Line: 176] - User submission failed due to: ['Enter a whole number.']
+2024-01-21 22:08:19,748 - WARNING - [Line: 185] - User submission failed due to improper HTTP request.
+2024-01-21 22:08:22,190 - WARNING - [Line: 185] - User submission failed due to improper HTTP request.

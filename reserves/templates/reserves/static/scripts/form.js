@@ -40,6 +40,7 @@
 const dataFromDB = JSON.parse(document.currentScript.
                                     nextElementSibling.textContent);
 const emptyStr = "";
+const breakHTML = "<br>";
 
 /* Notes:
 ** Below are a number of JavaScript objects
@@ -257,9 +258,9 @@ class FormInputs
         }
         else // The field is properly formatted
         {
+            blurInputErr.innerHTML = breakHTML;
             blurInputField.style.borderColor = ColorsEnum.Black;
             blurInputField.style.backgroundColor = ColorsEnum.White;
-            blurInputErr.innerHTML = emptyStr;
         }
 
         return returnBool;
@@ -292,7 +293,7 @@ class FormInputs
             {
                 focusInputField.style.outlineColor = ColorsEnum.BrightGreen;
                 focusInputField.style.backgroundColor = ColorsEnum.White;
-                focusInputErr.innerHTML = emptyStr;
+                focusInputErr.innerHTML = breakHTML;
             }
             else
             { 
