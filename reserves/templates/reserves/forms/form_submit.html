@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 
 <html lang="en">
@@ -11,28 +12,27 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-        <link rel="stylesheet" href="styles/submission_msg.css">
+        <link rel="stylesheet" href="{% static 'styles/form_submit.css'%}">
     </head>
     <body>
         <header>
-            <div class="left-header-section">
-                <a href="index.html">
-                    <img class="header-logo" src="pictures/logo/Lock_Wizards_png.png" alt="Lock Wizards Logo">
-                </a>
-            </div>
+            <a href="{% url 'home' %}">
+                <img class="header-logo" src="{% static 'pictures/logo/Lock_Wizards_png.png' %}" alt="Lock Wizards Logo">
+            </a>
         </header>
         <main>
-            <div class="new-grids">
-                <div class="graphic-block1">
-                </div>
-                <div class="graphic-block2">
-                </div>
-                <div class="info-box">
-                    <p class="message-header">Thank you for submitting!</p>
-                    <p class="message">
-                        An access code for the room you reserved has been sent to your email address.
+            <div class="main-form-grid">
+                <div class="graphic-block1"></div>
+                <div class="graphic-block2"></div>
+                <div class="msg-box">
+                    <h1 class="thanks-header-text general">
+                        Thank you for submitting!
+                    </h1>
+                    <p class="thanks-message-text general non-header-text">
+                        An access code for the room and time you reserved has 
+                        been sent to your email.
                     </p>
-                    <a href="index.html" class="return-link">Home</a>
+                    <a href="{% url 'home' %}" class="home-link general non-header-text">Home</a>
                 </div>
             </div>
         </main>

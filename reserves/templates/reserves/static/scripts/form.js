@@ -518,18 +518,17 @@ class DropdownInputs extends FormInputs
 
     
     /* Notes:
-    ** Checks if the current option selected after the cursor de-selects the dropdown is either 
-    ** "Select a time" or "None Available". If this is the case, then the format is incorrect 
-    ** and the dropdown selection can be said to be empty since nothing of true value has 
-    ** been selected.
+    ** Checks if the current option selected after the cursor de-selects the dropdown is an
+    ** empty string (the placeholder value of an option tag in HTML must always have an empty
+    ** string as its value). If this is the case, then the format is incorrect and the dropdown 
+    ** selection can be said to be empty since nothing of true value has been selected.
     ** The formatValidator() function is not utilized in this sub-class since the dropdown 
     ** selections are already formatted (typed input is not required and isn't possible 
     ** without manipulating the HTML).
     */
     emptyValueValidator(dropdownField) 
     {
-        if (dropdownField.options[dropdownField.selectedIndex].value === DropdownEnum.Select 
-                || dropdownField.options[dropdownField.selectedIndex].value === DropdownEnum.None)
+        if (dropdownField.options[dropdownField.selectedIndex].value === emptyStr)
         {
             this.formatBool = false;
             this.emptyBool = true;

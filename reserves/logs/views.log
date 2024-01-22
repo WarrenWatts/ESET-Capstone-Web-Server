@@ -91,3 +91,8 @@
 2024-01-20 14:31:50,492 - WARNING - [Line: 176] - User submission failed due to: ['Enter a whole number.']
 2024-01-21 22:08:19,748 - WARNING - [Line: 185] - User submission failed due to improper HTTP request.
 2024-01-21 22:08:22,190 - WARNING - [Line: 185] - User submission failed due to improper HTTP request.
+2024-01-22 10:25:42,345 - WARNING - [Line: 185] - User submission failed due to improper HTTP request.
+2024-01-22 10:25:47,315 - WARNING - [Line: 185] - User submission failed due to improper HTTP request.
+2024-01-22 10:25:58,637 - WARNING - [Line: 185] - User submission failed due to improper HTTP request.
+2024-01-22 12:42:44,829 - WARNING - [Line: 176] - User submission failed due to: ['Start time is no longer available. Please select again.']
+2024-01-22 12:45:00,835 - WARNING - [Line: 176] - User submission failed due to: ['Start time is no longer available. Please select again.']

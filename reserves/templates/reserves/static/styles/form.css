@@ -30,8 +30,6 @@ body {
   background-color: var(--palette-color-1);
 }
 
-/*a {text-decoration: none;}*/
-
 
 
 /* Header styling*/
@@ -261,9 +259,12 @@ label {
   color: var(--palette-color-5);
 }
 
+
+
 /*jQuery Calendar Styling*/
 /*-----------------------*/
 .ui-datepicker {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+
 
 
 @media all and (max-width: 1024px) {
@@ -289,7 +290,7 @@ label {
 
   .line-break {display: none;}
 
-  .last-name {padding-top: 4%;}
+  .last-name {padding-top: 2%;}
 
   .main-form-grid {grid-template-rows: 2% 98%;}
 
@@ -315,6 +316,9 @@ label {
   .db-error-text {line-height: 15px;}
 
 }
+
+
+
 
 @media all and (max-width: 776px) {
   main {
