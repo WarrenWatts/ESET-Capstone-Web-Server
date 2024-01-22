@@ -12,10 +12,10 @@
 
 
 /* Constants */
-const INDEX_START = 0; // Starting value for both index parameters in slideShow()
-const DELAY = 10000; // Timer delay in milliseconds
+const indexStart = 0; // Starting value for both index parameters in slideShow()
+const delay = 10000; // Timer delay in milliseconds
 
-slideShow(INDEX_START, INDEX_START);
+slideShow(indexStart, indexStart);
 
 
 /* Description:
@@ -50,11 +50,11 @@ function slideShow(currIndexVal, prevIndexVal) {
     /* Notes:
     ** setTimeout() is an asynchronous Web API function. What this means is that once it is called, the function
     ** which its caller is in will continue/finish executing. The API specifically for this function will 
-    ** set a timer, the time being specified by the variable DELAY. Once this timer has run its course, 
+    ** set a timer, the time being specified by the variable delay. Once this timer has run its course, 
     ** it will place the callback function, the first parameter, in the event loop which will then be placed 
     ** on the stack when the stack is empty.
     ** The .bind() function allows a new function to be created, the null parameter stating that this function
     ** has global context.
     */
-    setTimeout(slideShow.bind(null, currIndexVal, prevIndexVal), DELAY);
+    setTimeout(slideShow.bind(null, currIndexVal, prevIndexVal), delay);
 }
