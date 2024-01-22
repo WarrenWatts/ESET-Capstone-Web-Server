@@ -7,7 +7,7 @@
     -webkit-text-size-adjust: 100%;
   }
   
-  * {
+* {
     --palette-color-1: white;
     --palette-color-2: #7ED957;
     --palette-color-3: black;
@@ -16,60 +16,60 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-  }
-  
-  body {
+}
+
+body {
     margin: 0 auto;
     max-width: 80%;
     width: 100%;
-  
+
     display: flex;
     flex-direction: column;
     flex: 1;
-  
+
     background-color: var(--palette-color-1);
-  }
-  
-  
-  
-  /* Header styling*/
-  /*---------------*/
-  header {
+}
+
+
+
+/* Header styling*/
+/*---------------*/
+header {
     z-index: 10;
     display: flex;
-  
+
     max-width: inherit;
     width: inherit;
     height: 90px;
     padding: 0 clamp(1.25rem, -0.089rem + 3.571vw, 3.125rem);
-  
+
     position: fixed;
     top: 0px;
-  
+
     background-color: var(--palette-color-1);
     box-shadow: 
         0px 0px 3px rgba(0, 0, 0, 0.2),
         0px 0px 3px rgba(0, 0, 0, 0.2) inset;
-  }
-  
-  .header-logo {
+}
+
+.header-logo {
     z-index: 11;
     position: absolute;
     object-fit: contain;
     height: 80px;
     top: 5px;
-  }
-  
-  .header-logo:hover {cursor: pointer;}
-  
-  
-  
-  /*Main Block Styling*/
-  /*------------------*/
-  main {
+}
+
+.header-logo:hover {cursor: pointer;}
+
+
+
+/*Main Block Styling*/
+/*------------------*/
+main {
     margin-top: 90px;
     min-height: 100vh;
-  
+
     display: flex;
     flex-direction: column;
     max-width: 53%;
@@ -77,11 +77,11 @@
     justify-content: center;
     align-self: center;
     background-color: white;
-  }
-  
-  /*Over-arching Form Grid Styling*/
-  /*------------------------------*/
-  .main-form-grid {
+}
+
+/*Over-arching Form Grid Styling*/
+/*------------------------------*/
+.main-form-grid {
     display: grid;
     min-height: 300px;
     grid-template-columns: 20% 80%;
@@ -89,23 +89,23 @@
     grid-template-areas: 
         "graphic-block1 graphic-block2"
         "msg-box msg-box";
-  }
-  
-  .graphic-block1 {
+}
+
+.graphic-block1 {
     display: grid;
     grid-area: graphic-block1;
     background-color: var(--palette-color-2);
-  }
-  
-  .graphic-block2 {
+}
+
+.graphic-block2 {
     display: grid;
     grid-area: graphic-block2;
     background-color: #E1E1E1;
-  }
-  
-  /*Form Box Grid Styling*/
-  /*------------------------------*/
-  .msg-box {
+}
+
+/*Form Box Grid Styling*/
+/*------------------------------*/
+.msg-box {
     display: grid;
     grid-area: msg-box;
     grid-template-columns: 100%;
@@ -115,87 +115,87 @@
         "thanks-message-text"
         "home-link";
     background-color: rgba(126, 217, 87, 0.6);
-  }
-  
-  .general {align-items: center;}
-  
-  .thanks-header-text {
+}
+
+.general {align-items: center;}
+
+.thanks-header-text {
     font: 
             600 
             clamp(1rem, 0.864rem + 0.682vw, 2.5rem)
             /20px
             Poppins, Arial;
-    
+
     padding-left: 2%;
     color: var(--palette-color-3);
-  
+
     display: grid;
     grid-area: thanks-header-text;
-  }
-  
-  .non-header-text{
+}
+
+.non-header-text{
     font: 500
-          clamp(0.75rem, 0.693rem + 0.284vw, 1.375rem)
-          Poppins, Arial;
-    
+            clamp(0.75rem, 0.693rem + 0.284vw, 1.375rem)
+            Poppins, Arial;
+
     justify-content: center
-  }
-  
-  .thanks-message-text {
+}
+
+.thanks-message-text {
     margin: 0% 20% 0% 20%;
     color: var(--palette-color-3);
-  
+
     display: grid;
     grid-area: thanks-message-text;
-  }
-  
-  .home-link {
+}
+
+.home-link {
     display: grid;
     grid-area: home-link;
-  }
-  
-  
-  
-  
-  
-  
-  @media all and (max-width: 1024px) {
-  
+}
+
+
+
+
+
+
+@media all and (max-width: 1024px) {
+
     main {margin-top: 60px;}
     body {max-width: 100%;}
-  
+
     header {height: 60px;}
-  
+
     .header-logo {height: 50px;}
-  
+
     .main-form-grid {grid-template-rows: 4% 96%;}
-  
+
     .button-container{
         display: grid;
         grid-area: button-container;
         padding-bottom: 2%;
     }
-  
+
     button{
         width: 50%;
         justify-self: center;
         align-self: center;
     }
-  
+
     .submit-button {
         width: clamp(8rem, 7.091rem + 4.545vw, 10rem);
         height: clamp(2.5rem, 2.216rem + 1.42vw, 3.125rem);
     }
-  
+
     .db-error-text {line-height: 15px;}
-  
-  }
-  
-  
-  
-  
-  @media all and (max-width: 776px) {
+
+}
+
+
+
+
+@media all and (max-width: 776px) {
     main {
         max-width: 100%;
-    }
-  }
+}
+}

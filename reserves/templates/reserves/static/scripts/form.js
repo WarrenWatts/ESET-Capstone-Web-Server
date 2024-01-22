@@ -105,15 +105,15 @@ let formInputObjArr = [];
 ** the same order, so arrays of the like make sense.
 */
 const textInputFields = [
-    "firstField", 
-    "lastField",
+    "firstNameField", 
+    "lastNameField",
     "emailField",
 ]
 
 const textErrFields = [
-    "firstError", 
-    "lastError",
-    "emailError",
+    "firstNameErr", 
+    "lastNameErr",
+    "emailErr",
 ]
 
 const textRegExArr = [
@@ -129,11 +129,11 @@ const textErrMsgArr = [
 ]
 
 const dateInputField = "datePicker";
-const dateErrField = "datePickError";
+const dateErrField = "datePickerErr";
 
 const ddInputFields = [
-    "starttime",
-    "endtime",
+    "startTimeField",
+    "endTimeField",
 ]
 
 const ddErrFields = [

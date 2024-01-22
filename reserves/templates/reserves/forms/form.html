@@ -43,35 +43,35 @@
                         {% endif %}
                         <div class="form-inputs">
                             <div class="input-group first-name">
-                                <label for="firstField">Name *</label>
-                                <input type="text" placeholder="First" id="firstField" name="firstName" pattern="[A-za-z]{1,50}" maxlength="50" required>
-                                <span class="general-error" id="firstError"><br></span>
+                                <label for="firstNameField">Name *</label>
+                                <input type="text" placeholder="First" id="firstNameField" name="firstName" pattern="[A-za-z]{1,50}" maxlength="50" required>
+                                <span class="general-error" id="firstNameErr"><br></span>
                             </div>
                             <div class="input-group last-name">
                                 <br class="line-break">
-                                <input type="text" placeholder="Last" id="lastField" name="lastName" pattern="[A-za-z]{1,50}" maxlength="50" required>
-                                <span class="general-error" id="lastError"><br></span>
+                                <input type="text" placeholder="Last" id="lastNameField" name="lastName" pattern="[A-za-z]{1,50}" maxlength="50" required>
+                                <span class="general-error" id="lastNameErr"><br></span>
                             </div>
                             <div class="input-group email-class">
                                 <label for="emailField">Email *</label>
                                 <input type="email" id="emailField" name="email" pattern="[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$" maxlength="62" required>
-                                <span class="general-error" id="emailError"><br></span>
+                                <span class="general-error" id="emailErr"><br></span>
                             </div>
                             <div class="input-group the-date-picker">
                                 <label for="datePicker">Date *</label>
                                 <input type="text" id="datePicker" name="date" style="background-color: #DFFAD4; border: 1px solid black; border-radius: 3px; padding: 4% 0% 4% 2%;" required>
-                                <span class="general-error" id="datePickError"><br></span>
+                                <span class="general-error" id="datePickerErr"><br></span>
                             </div>
                             <div class="input-group start-time">
-                                <label for="starttime">Start Time *</label>
-                                <select id="starttime" name="unixStartTime" required>
+                                <label for="startTimeField">Start Time *</label>
+                                <select id="startTimeField" name="unixStartTime" required>
                                     <option value="">Select a time</option>
                                 </select>
                                 <span class="general-error" id="startTimeError"><br></span>
                             </div>
                             <div class="input-group end-time">
-                                <label for="endtime">End Time *</label>
-                                <select id="endtime" name="unixEndTime" required>
+                                <label for="endTimeField">End Time *</label>
+                                <select id="endTimeField" name="unixEndTime" required>
                                     <option value="">Select a time</option>
                                 </select>
                                 <span class="general-error" id="endTimeError"><br></span>
