@@ -34,15 +34,8 @@
 ** 12Clk - 12 hour clock
 */
 
-/* Function Prefix Legend:
-**
-** h - handle
-** d - display
-*/
-
 
 /* Constants */
-
 // Gets the dates, start times, and end times from Django Python
 const dataFromDB = JSON.parse(document.currentScript.
                                     nextElementSibling.textContent);
@@ -189,8 +182,8 @@ class FormInputs
 
 
     /* Description:
-    ** The hFormatValidator() function here is simply a placeholder/base function
-    ** that is replaced by each child classes' own hEmptyValValidator()
+    ** The formatValidator() function here is simply a placeholder/base function
+    ** that is replaced by each child classes' own emptyValueValidator()
     ** function. Each child class will use this function to verify that their input
     ** is properly formatted in their own unique way. The this.formatBool variable
     ** is then changed accordingly to signify the status of the input field's format.
@@ -202,12 +195,12 @@ class FormInputs
     ** This function does not have a return value in the normal sense, but instead changes
     ** the object's this.emptyBool variable value accordingly.
     */
-    hFormatValidator(formInputField){}
+    formatValidator(formInputField){}
 
 
     /* Description:
-    ** The hEmptyValValidator() function here is simply a placeholder/base function
-    ** that is replaced by each child classes' own hEmptyValValidator()
+    ** The emptyValueValidator() function here is simply a placeholder/base function
+    ** that is replaced by each child classes' own emptyValueValidator()
     ** function. Each child class will use this function to check whether or not their input
     ** is empty in their own unique way. The this.emptyBool variable is then changed accordingly 
     ** to signify the state of the input field.
@@ -219,11 +212,11 @@ class FormInputs
     ** This function does not have a return value in the normal sense, but instead changes
     ** the object's this.formatBool variable value accordingly.
     */
-    hEmptyValValidator(formInputField){}
+    emptyValueValidator(formInputField){}
 
 
     /* Description:
-    ** The dOnBlurValidator() function is used to display (via the Document Object Model)
+    ** The onBlurValidator() function is used to display (via the Document Object Model)
     ** whether or not the user has correctly provided their information into a specified 
     ** input field. (Is manipulating the UI.) Since all field inputs on the form will do this, 
     ** this function was designed in a way that it only has to rely on the Boolean variables 
@@ -241,7 +234,7 @@ class FormInputs
     ** The return value here is used specifically for validation (both visual and non-visual) when
     ** form submission is attempted.
     */
-    dOnBlurValidator(blurInputField, blurInputErr, errMessage) 
+    onBlurValidator(blurInputField, blurInputErr, errMessage) 
     {
         let returnBool = true;
 
@@ -274,7 +267,7 @@ class FormInputs
 
 
     /* Description:
-    ** The dOnFocusValidator() function is one that activates on selection of an input field.
+    ** The onFocusValidator() function is one that activates on selection of an input field.
     ** Once the input field has been selected, another event listener is added to see if
     ** the input field has received any input. If input is received, it checks if the current input
     ** text matches the format or not for the input field. It uses the DOM to signify to the user if their
@@ -289,12 +282,12 @@ class FormInputs
     ** This is due in one part because it is not necessary for the date or dropdown selectors,
     ** and in another part because of the errors it was creating.
     */
-    dOnFocusValidator(focusInputField, focusInputErr) 
+    onFocusValidator(focusInputField, focusInputErr) 
     {
         // Event listener that waits for an input to occur before executing the function
         focusInputField.addEventListener("input", () =>
         {
-            let checkBool = this.hFormatValidator(focusInputField);
+            let checkBool = this.formatValidator(focusInputField);
             if (checkBool)
             {
                 focusInputField.style.outlineColor = ColorsEnum.BrightGreen;
@@ -323,17 +316,17 @@ class FormInputs
     ** while still allowing their code to function as intended. If there are no events,
     ** then events don't need to be handled.
     */
-    hEvent (e) 
+    handleEvent (e) 
     {
         switch (e.type) 
         {
             case "blur":
-                this.hFormatValidator(this.inputField)
-                this.hEmptyValValidator(this.inputField)
-                this.dOnBlurValidator(this.inputField, this.inputErr, this.errMsg);
+                this.formatValidator(this.inputField)
+                this.emptyValueValidator(this.inputField)
+                this.onBlurValidator(this.inputField, this.inputErr, this.errMsg);
                 break;
             case "focus":
-                this.formatBool = this.dOnFocusValidator(this.inputField, this.inputErr);
+                this.formatBool = this.onFocusValidator(this.inputField, this.inputErr);
                 break;
             default:
                 break;
@@ -367,13 +360,13 @@ class TextInputs extends FormInputs
     }
 
     /* Notes:
-    ** This hFormatValidator has a return function in order to be handled by the
-    ** dOnFocusValidator()'s anonymous function. Otherwise, the value of
+    ** This formatValidator has a return function in order to be handled by the
+    ** onFocusValidator()'s anonymous function. Otherwise, the value of
     ** this.formatBool cannot be utilized. Since this is a TextInputs specific
-    ** problem and no other sub-classes utilize the dOnFocusValidator() function,
+    ** problem and no other sub-classes utilize the onFocusValidator() function,
     ** the return value is being placed here instead of FormInputs.
     */
-    hFormatValidator(textInputField)
+    formatValidator(textInputField)
     {
         this.formatBool = (textInputField.value.match(this.regEx)) ? true : false;
 
@@ -381,7 +374,7 @@ class TextInputs extends FormInputs
     }
 
 
-    hEmptyValValidator(textInputField)
+    emptyValueValidator(textInputField)
     {
         this.emptyBool = (textInputField.value) ? false : true;
     }
@@ -434,7 +427,7 @@ class DatePickerInputs extends FormInputs
         ** onClose : function() - the anonymous function discussed in the description
         **
         ** Notes:
-        ** The hFormatValidator(), hEmptyValValidator(), and dOnBlurValidator() functions are
+        ** The formatValidator(), emptyValueValidator(), and onBlurValidator() functions are
         ** still utilized and checked in the anonymous function (done at the function's end).
         ** This anonymous function also considers the possibility of no times being available
         ** for a selected day due to them all being taken.
@@ -453,7 +446,7 @@ class DatePickerInputs extends FormInputs
     
                 for (let i in dataFromDB[this.value]) 
                 {
-                    selStart.options[selStart.options.length] = new Option(hUnixToReadable(i), i);
+                    selStart.options[selStart.options.length] = new Option(unixToReadable(i), i);
                 }
                 
                 /* Notes:
@@ -464,20 +457,20 @@ class DatePickerInputs extends FormInputs
                 selStart.options[0].innerHTML = selEnd.options[0].innerHTML = 
                         ((selStart.length === 1) ? DropdownEnum.None : DropdownEnum.Select);
                 
-                self.hFormatValidator();
-                self.hEmptyValValidator();
-                self.dOnBlurValidator(self.inputField, self.inputErr, self.errMsg);
+                self.formatValidator();
+                self.emptyValueValidator();
+                self.onBlurValidator(self.inputField, self.inputErr, self.errMsg);
             },
         });
     }
 
 
     /* Notes:
-    ** No parameters used in either the hFormatValidator() or hEmptyValValidator() functions
+    ** No parameters used in either the formatValidator() or emptyValueValidator() functions
     ** This works because the event listeners for both "blur" and "focus" were removed since 
     ** this is a jQuery object that has its own set of event listener values.
     */
-    hFormatValidator() 
+    formatValidator() 
     {
         if ($("#datePicker").val().match(RegExpEnum.DateFormat))
         {
@@ -492,7 +485,7 @@ class DatePickerInputs extends FormInputs
     }
 
 
-    hEmptyValValidator()
+    emptyValueValidator()
     {
         this.emptyBool = (($("#datePicker")).val() === emptyStr) ? true : false;
     }
@@ -504,14 +497,14 @@ class DatePickerInputs extends FormInputs
 /* Description:
 ** Another child class of the FormInputs parent class, the DropdownInputs class
 ** was created to utilize its own variations of the validator functions that differ
-** from the other child classes. This class utilizes only the hEmptyValValidator()
+** from the other child classes. This class utilizes only the emptyValueValidator()
 ** function to validate the field's input.
 **
 ** Parameters:
 ** *Are the same as the parent class*
 **
 ** Notes:
-** The "focus" event and the dOnFocusValidator() function are not needed for this class.
+** The "focus" event and the onFocusValidator() function are not needed for this class.
 ** This is why the event listener is removed for "focus" in the constructor.
 */
 class DropdownInputs extends FormInputs 
@@ -528,11 +521,11 @@ class DropdownInputs extends FormInputs
     ** "Select a time" or "None Available". If this is the case, then the format is incorrect 
     ** and the dropdown selection can be said to be empty since nothing of true value has 
     ** been selected.
-    ** The hFormatValidator() function is not utilized in this sub-class since the dropdown 
+    ** The formatValidator() function is not utilized in this sub-class since the dropdown 
     ** selections are already formatted (typed input is not required and isn't possible 
     ** without manipulating the HTML).
     */
-    hEmptyValValidator(dropdownField) 
+    emptyValueValidator(dropdownField) 
     {
         if (dropdownField.options[dropdownField.selectedIndex].value === DropdownEnum.Select 
                 || dropdownField.options[dropdownField.selectedIndex].value === DropdownEnum.None)
@@ -613,7 +606,7 @@ selStart.onchange = function()
     for (let i = 0; i < endTime.length; i++)
     {
         selEnd.options[selEnd.options.length] = 
-                new Option(hUnixToReadable(endTime[i]), endTime[i]);
+                new Option(unixToReadable(endTime[i]), endTime[i]);
     }
 }
 
@@ -623,7 +616,7 @@ selStart.onchange = function()
 ** An anonymous function on an event listener for a "submit" event,
 ** this function verifies whether or not all the fields have been
 ** filled out and filled out properly (properly formatted). If not,
-** the incorrect fields are displayed using the dOnBlurValidator()
+** the incorrect fields are displayed using the onBlurValidator()
 ** function. The first incorrect field in the form will be "focused",
 ** meaning your cursor is within said field.
 **
@@ -633,7 +626,7 @@ selStart.onchange = function()
 ** Notes:
 ** The default that we are preventing, in the case of an error,
 ** is the submission of the form.
-** This function makes use of the dOnBlurValidator() function's
+** This function makes use of the onBlurValidator() function's
 ** return values in order to verify whether or not the form is
 ** ready for submission.
 */
@@ -644,7 +637,7 @@ formElement.addEventListener("submit", function(event)
 
     for (let i = 0; i < formInputObjArr.length; i++)
     {
-        let formBool = formInputObjArr[i].dOnBlurValidator( 
+        let formBool = formInputObjArr[i].onBlurValidator( 
                         formInputObjArr[i].inputField, 
                         formInputObjArr[i].inputErr,
                         formInputObjArr[i].errMsg,
@@ -671,7 +664,7 @@ formElement.addEventListener("submit", function(event)
 
 
 /* Description:
-** The hUnixToReadable() function allows unix timestamps to be 
+** The unixToReadable() function allows unix timestamps to be 
 ** displayed in a human readable form for selection.
 **
 ** Parameters:
@@ -685,7 +678,7 @@ formElement.addEventListener("submit", function(event)
 ** in increments of 30 minutes, which is why this function works
 ** properly with such simplicity.
 */
-function hUnixToReadable(timestampVal)
+function unixToReadable(timestampVal)
 {
     /* Notes:
     ** Multiplied by the timeCorrection variable, which is a value of 1000.
