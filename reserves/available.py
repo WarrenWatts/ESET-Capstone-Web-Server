@@ -4,7 +4,11 @@
 ** Author: Warren Watts
 ** File: available.py
 ** --------
-** Python code ............
+** The available.py file holds Python code for the AvailableTime() class. It is the 
+** backbone of much of the important information needed for the Form Page of the website. 
+** Given a specified datetime and the current datetime, this class can determine 
+** what times are available to reserve a room for a specified date by generating and 
+** comparing/filtering unix timestamps.
 */"""
 
 
@@ -61,10 +65,7 @@ THIRTY_MIN_MILLI = 1800
 
 
 """/* Description:
-** The AvailableTime() class is the backbone of much of the important information
-** needed for the Form Page of the website. Given a specified datetime and the current
-** datetime, this class can determine what times are available to reserve a room for a
-** specified date by generating and comparing/filtering unix timestamps.
+** Class description explained in the file's description.
 **
 ** Parameters:
 ** newDatetime - the datetime of some specified date
@@ -86,7 +87,7 @@ class AvailabileTime():
         self.selectedDate = newDatetime # The passed calendar in datetime value
         self.today = now # The current datetime value
         self.timeDict = dict() # The dictionary that will be the value for each key in dateDict    
-        self.__setupFunction() # Function that handles the function calls to complete the timeDict
+        self.__setupFunction()
 
 
 
@@ -105,13 +106,7 @@ class AvailabileTime():
 
         origTimeList = self.__genOrigTimes(startHour, startCount)
 
-        """/* Notes:
-        ** The list slicing in the function arguments below removes the last item from startTimes list 
-        ** and first item from endTimes list. The reason for this is because 11:00pm will never be a 
-        ** start time and 6:00am will never be an end time.
-        ** It should also be noted that the __filterDbTimes function returns a list of lists, which
-        ** is why the arguments in __genDict() are indexed.
-        */"""
+        # List slicing to remove the last 30 min. increment from available start times and vice versa
         postDbTimesList = self.__filterDbTimes(origTimeList[:-1], origTimeList[1:])
         self.timeDict = self.__genDict(postDbTimesList[0], postDbTimesList[1])
         self.__genLogOfDict()

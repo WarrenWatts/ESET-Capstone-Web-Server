@@ -32,7 +32,8 @@ slideShow(indexStart, indexStart);
 ** set to "none" by default) and displays the current image. setTimeout() is then used to call the
 ** function after a set period of time.
 */
-function slideShow(currIndexVal, prevIndexVal) { 
+function slideShow(currIndexVal, prevIndexVal) 
+{ 
     const images = document.getElementsByClassName("statement-photo");
 
     if (currIndexVal > (images.length - 1))
@@ -41,6 +42,7 @@ function slideShow(currIndexVal, prevIndexVal) {
     }
 
     images[prevIndexVal].style.display = "none";
+
     // "inline-block" allows for a specified width and height to be set
     images[currIndexVal].style.display = "inline-block";
 
