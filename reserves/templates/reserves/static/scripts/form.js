@@ -11,10 +11,12 @@
 */
 
 
+
 /* NOTE:
 ** Any conditional operators used were due to the trivial nature of their
 ** statement in addition to keeping with the DRY principle.
 */
+
 
 
 /* Variable Naming Abbreviations Legend:
@@ -35,12 +37,15 @@
 */
 
 
+
 /* Constants */
 // Gets the dates, start times, and end times from Django Python
 const dataFromDB = JSON.parse(document.currentScript.
                                     nextElementSibling.textContent);
 const emptyStr = "";
 const breakHTML = "<br>";
+
+
 
 /* Notes:
 ** Below are a number of JavaScript objects
@@ -89,11 +94,13 @@ const ColorsEnum = Object.freeze({
 })
 
 
+
 /* Notes:
 ** Is the only non-const global variable.
 ** Is the array for form input objects.
 */
 let formInputObjArr = [];
+
 
 
 /* Notes:
@@ -141,6 +148,8 @@ const ddErrFields = [
     "endTimeError",
 ]
 
+
+
 // Const for selected start time
 const selStart = document.getElementById(ddInputFields[0]);
 
@@ -148,7 +157,6 @@ const selStart = document.getElementById(ddInputFields[0]);
 const selEnd = document.getElementById(ddInputFields[1]);
 
 const formElement = document.querySelector("form");
-
 
 
 
@@ -174,7 +182,7 @@ class FormInputs
         this.inputErr = document.getElementById(inputErr);
 
         this.errMsg = errMsg;
-        this.formatBool = false; // Initially empty, so the input cannot have the correct format
+        this.formatBool = false; // Initially empty => initially incorrect input format
         this.emptyBool = true; // Initially empty
 
         this.inputField.addEventListener("focus", this);
@@ -245,11 +253,11 @@ class FormInputs
             blurInputField.style.borderColor = ColorsEnum.Red;
             blurInputField.style.backgroundColor = ColorsEnum.LightRed;
     
-            if (this.emptyBool) // The field is empty
+            if (this.emptyBool)
             {
                 blurInputErr.innerHTML = ErrEnum.Required;
             }
-            else // The field isn't empty but is improperly formatted
+            else
             {
                 blurInputErr.innerHTML = errMessage;
             }
@@ -285,7 +293,6 @@ class FormInputs
     */
     onFocusValidator(focusInputField, focusInputErr) 
     {
-        // Event listener that waits for an input to occur before executing the function
         focusInputField.addEventListener("input", () =>
         {
             let checkBool = this.formatValidator(focusInputField);
@@ -359,6 +366,7 @@ class TextInputs extends FormInputs
         super(inputField, inputErr, errMsg);
         this.regEx = regEx;
     }
+
 
     /* Notes:
     ** This formatValidator has a return function in order to be handled by the
@@ -600,7 +608,7 @@ selStart.onchange = function()
     // Resets the length of the end time dropdown options (frees memory)
     selEnd.length = 1;
 
-    // "this" being the currently selected selStart value
+    // "this" being the currently selected selStart (start time) value
     let endTime = dataFromDB[formInputObjArr[3].selDate][this.value];
 
     for (let i = 0; i < endTime.length; i++)

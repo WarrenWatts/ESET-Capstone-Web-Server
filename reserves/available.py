@@ -55,8 +55,8 @@ logger.addHandler(file_handler)
 
 
 
-# Constants
-THIRTY_MIN_MILLI = 1800 # Thirty minutes in seconds (for Unix Time)
+# Thirty minutes in seconds (for Unix Time)
+THIRTY_MIN_MILLI = 1800
 
 
 
@@ -133,9 +133,7 @@ class AvailabileTime():
     def __genOrigTimes(self, hourT, startCount) -> list:
         logger.debug("Entering __genOrigTimes...")
 
-        # The time list that will be returned
         origTimeList = list()
-
         thirtyMin = 30
         modNum = 2
 
@@ -148,7 +146,6 @@ class AvailabileTime():
 
         for j in range(startCount, endCount):
 
-            # The default for minutes (resets every loop) 
             minutesT = 0
 
             # Changes to 30 minutes when the current count is odd
@@ -164,7 +161,6 @@ class AvailabileTime():
                             minutesT,
                         )
             
-            # Take the datetime value, change it to unix time, and append to the list.
             origTimeList.append(int(time.mktime(toUnixTime.timetuple())))
             
             # If minutesT is 30, then the next loop will be for the next hour
@@ -199,23 +195,12 @@ class AvailabileTime():
     def __filterDbTimes(self, startTimes = None, endTimes = None) -> list:
         logger.debug("Entering __filterDbTimes...")
 
-        """/* Notes:
-        ** This is a MySQL database query that only looks for the selected date, and only takes
-        ** in the unix start timestamps and end timestamps for each of these entries. These
-        ** entries are stored in a named tuple.
-        */"""
         myDbData = (
                 Reserves.objects.
                 filter(date=self.selectedDate).
                 values_list("unixStartTime", "unixEndTime", named=True)
             )
         
-        """/* Notes:
-        ** It may be obvious but just to state it, if no data is found from the MySQL query
-        ** then this for loop will be ignored.
-        ** Also not that in the case of this for loop, it is okay to use the .remove() method
-        ** since we are not looping through the list that we are currently removing items from!
-        */"""
         for queryset in myDbData:
 
             """/* Notes:
@@ -243,10 +228,7 @@ class AvailabileTime():
                 startTimes.remove(queryset.unixStartTime)
                 endTimes.remove(queryset.unixEndTime)
 
-                """/* Notes:
-                ** The for loop starts 30 minutes after start time, increments by 30, 
-                ** and doesn't execute if the start and stop values are equal.
-                */"""
+                # Starts 30 min. after start time
                 for i in range(queryset.unixStartTime + THIRTY_MIN_MILLI, 
                                 queryset.unixEndTime, 
                                 THIRTY_MIN_MILLI):
@@ -256,7 +238,7 @@ class AvailabileTime():
         if self.today.date() == self.selectedDate:
             startTimes = [time for time in startTimes 
                             if time > int(datetime.datetime.now().timestamp()) - 900]
-                
+               
         logger.debug("Start Times List: {}".format(startTimes))
         logger.debug("End Times List: {}".format(endTimes))
         return [startTimes, endTimes]
@@ -285,10 +267,10 @@ class AvailabileTime():
     ** There are four layers of nesting here, however, this only occurs in order to enable the logging of a
     ** potentially critical error.
     */"""
-    # Returns the finalized dictionary
     def __genDict(self, startTimes = None, endTimes = None) -> dict:
         logger.debug("Entering __genDict...")
 
+        # Limit to two hours of reservation time
         incrementsOfThirty = 4
 
         unixTimesDict = {x : list() for x in startTimes}
@@ -304,7 +286,6 @@ class AvailabileTime():
                         logger.error("Start time did not have at least one end time.")
                     break
                 
-                # Append incrementTime to the key's list of end times
                 unixTimesDict[startT].append(incrementTime)
 
         return unixTimesDict
@@ -325,7 +306,6 @@ class AvailabileTime():
         logger.debug("Entering __genLogOfDict...")
         logger.info(self.getDate())
 
-        # String used since 00 is a not a producable int value from the .minute method
         thirtyStr = "30"
         dblZeroStr = "00"
 
@@ -354,7 +334,6 @@ class AvailabileTime():
     ** Return:
     ** An ISO formatted string of the object's date is returned.
     */"""
-    # Get calendar date of instance and return it as a string
     def getDate(self) -> str:
         logger.debug("Getting calendar date...")
         return str(self.selectedDate)
@@ -370,7 +349,6 @@ class AvailabileTime():
     ** A dictionary of the start timestamps and corresponding end timestamps
     ** is returned.
     */"""
-    # Get the timeDict for the instance
     def getDict(self) -> dict:
         logger.debug("Getting time dictionary...")
         return self.timeDict
