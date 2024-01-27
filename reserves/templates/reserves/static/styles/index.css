@@ -1,5 +1,8 @@
-/* General styling*/
-/*---------------*/
+/* General styling
+** ---------------
+** Styling related to the HTML page as a whole
+** and specific, main structure elements such as body.
+*/
 :root {
     color: var(--palette-color-1);
     background-color: #EFEFEF;
@@ -38,8 +41,10 @@ a {text-decoration: none;}
 
 
 
-/* Header styling*/
-/*---------------*/
+/* Header styling
+** ---------------
+** Styling related to the website's fixed header.
+*/
 header {
     z-index: 10;
     display: flex;
@@ -70,8 +75,17 @@ header {
 
 
 
-/* First row styling*/
-/*------------------*/
+/* First row styling
+** ------------------
+** Styling related to the row containing
+** the "Preserving history.." statement and
+** the slideshow images of older buildings.
+** "main" also contains grid format styling
+** for the webpages overall layout.
+** The header is contained within the body of the
+** page, so the main block is used to distinguish
+** the rest of the body's styling.
+*/
 main {
     margin-top: 90px;
     min-height: 1250px;
@@ -125,8 +139,11 @@ main {
 
 
 
-/* Second row styling*/
-/*-------------------*/
+/* Second row styling
+** -------------------
+** Styling related to the row containing
+** the "Reserve a room" related text and images.
+*/
 .reserve-photo-box {
     display: grid;
     align-items: center;
@@ -206,8 +223,12 @@ main {
 
 
 
-/* Footer styling*/
-/*---------------*/
+/* Footer styling
+** ---------------
+** Styling related to the footer at the bottom of the
+** page containing info on our social media as well as
+** contact information.
+*/
 .contact-info,
 .follow-info {
     font: 
@@ -242,8 +263,14 @@ main {
 
 
 
-/* Media query styling*/
-/*--------------------*/
+/* Media Query styling
+** --------------------
+** Styling related to when the screen size of a device
+** using the website goes below 1024px in width. This 
+** aids in designing a dynamic and responsive website.
+** The grid layout also changes here from being two columns
+** multiple rows to a single column with multiple rows.
+*/
 @media all and (max-width: 1024px) {
 
     body {max-width: 100%;}

@@ -1,5 +1,8 @@
-/* General styling*/
-/*---------------*/
+/* General styling
+** ---------------
+** Styling related to the HTML page as a whole
+** and specific, main structure elements such as body.
+*/
 :root {
     color: var(--palette-color-1);
     background-color: #EFEFEF;
@@ -32,8 +35,10 @@ body {
 
 
 
-/* Header styling*/
-/*---------------*/
+/* Header styling
+** ---------------
+** Styling related to the website's fixed header.
+*/
 header {
     z-index: 10;
     display: flex;
@@ -64,8 +69,12 @@ header {
 
 
 
-/*Main Block Styling*/
-/*------------------*/
+/*Main Block Styling
+** ------------------
+** The header is contained within the body of the
+** page, so the main block is used to distinguish
+** the rest of the body's styling.
+*/
 main {
     margin-top: 90px;
     min-height: 100vh;
@@ -79,8 +88,15 @@ main {
     background-color: white;
 }
 
-/*Over-arching Form Grid Styling*/
-/*------------------------------*/
+
+
+/* Over-arching Grid Styling
+** --------------------------
+** Styling related to outer grid which contains the form box
+** as well as two boxes that aid in the graphic design of the
+** form itself. The form box will be where all the information
+** is placed.
+*/
 .main-form-grid {
     display: grid;
     min-height: 300px;
@@ -103,8 +119,15 @@ main {
     background-color: #E1E1E1;
 }
 
-/*Form Box Grid Styling*/
-/*------------------------------*/
+
+
+/* Form Box Grid Styling
+** ----------------------
+** Styling related to the nested grid of the form box
+** This nesting was done to create the rows for each area
+** where elements and information would end up being placed
+** in the form box.
+*/
 .msg-box {
     display: grid;
     grid-area: msg-box;
@@ -156,9 +179,14 @@ main {
 
 
 
-
-
-
+/* Media Query styling
+** --------------------
+** Styling related to when the screen size of a device
+** using the website goes below 1024px in width. This 
+** aids in designing a dynamic and responsive website.
+** The grid layout does not change here like the regular
+** form.
+*/
 @media all and (max-width: 1024px) {
 
     main {margin-top: 60px;}
@@ -193,9 +221,16 @@ main {
 
 
 
-
+/* Media Query styling
+** --------------------
+** Styling related to when the screen size of a device
+** using the website goes below 776px in width. This 
+** aids in designing a dynamic and responsive website.
+** The layout of the form changes so that the form fills
+** the screen.
+*/
 @media all and (max-width: 776px) {
     main {
         max-width: 100%;
-}
+    }
 }
