@@ -1,3 +1,16 @@
+"""/* Texas A&M University
+** Electronic Systems Engineering Technology
+** ESET-420 Engineering Technology Capstone II
+** Author: Warren Watts
+** File: views.py
+** --------
+** The views.py file holds Django views functions that take in web
+** requests and return web responses. Additionally, other
+** "helper" functions were added to aid these view functions.
+** For more information on Django views, go to 
+** https://docs.djangoproject.com/en/5.0/topics/http/views/
+*/"""
+
 
 
 # Imports for Emails
