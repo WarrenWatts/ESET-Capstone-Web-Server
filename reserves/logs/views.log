@@ -96,3 +96,33 @@
 2024-01-22 10:25:58,637 - WARNING - [Line: 185] - User submission failed due to improper HTTP request.
 2024-01-22 12:42:44,829 - WARNING - [Line: 176] - User submission failed due to: ['Start time is no longer available. Please select again.']
 2024-01-22 12:45:00,835 - WARNING - [Line: 176] - User submission failed due to: ['Start time is no longer available. Please select again.']
+2024-01-24 14:12:49,459 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 14:15:17,187 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 14:15:18,304 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 14:15:38,758 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 14:15:58,956 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 14:17:38,294 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 14:19:11,558 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 14:19:38,168 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 14:23:15,737 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 14:23:27,735 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 14:23:28,910 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 14:23:52,155 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 14:26:28,471 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 14:26:50,394 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 15:08:26,121 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 15:08:39,341 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 15:08:49,167 - CRITICAL - [Line: 96] - An error occurred with reverse URL processing.
+2024-01-24 15:10:51,589 - CRITICAL - [Line: 134] - Incorrect HTTP Request from REST API
+2024-01-24 17:55:51,812 - CRITICAL - [Line: 85] - Improper JSON formatting!
+2024-01-24 17:57:03,380 - CRITICAL - [Line: 84] - Improper JSON formatting!
+2024-01-26 18:37:16,921 - CRITICAL - [Line: 106] - Imroper JSON Formatting!
+2024-01-26 18:43:32,884 - WARNING - [Line: 103] - Failed Entry!
+2024-01-26 18:43:42,529 - WARNING - [Line: 103] - Failed Entry!
+2024-01-26 18:45:59,295 - CRITICAL - [Line: 106] - Invalid Data!
+2024-01-26 18:46:11,691 - CRITICAL - [Line: 106] - Invalid HTTP Request!
+2024-01-26 18:47:18,502 - CRITICAL - [Line: 106] - Invalid Data!
+2024-01-26 18:49:03,380 - CRITICAL - [Line: 106] - Invalid HTTP Request!
+2024-01-26 18:49:08,804 - CRITICAL - [Line: 106] - Invalid Data!
+2024-01-26 18:51:46,523 - CRITICAL - [Line: 106] - Imroper JSON Formatting!
+2024-01-26 19:29:45,384 - WARNING - [Line: 261] - User submission failed due to: ['Start time is no longer available. Please select again.']
