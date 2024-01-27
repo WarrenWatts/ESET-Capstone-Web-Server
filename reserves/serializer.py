@@ -20,12 +20,12 @@ from .models import Reserves
 
 class AccessSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Reserves
+        model = Reserves
         fields = ["accessCode"]
 
 
 
 class RsvNameSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Reserves
+        model = Reserves
         fields = ["unixStartTime"]

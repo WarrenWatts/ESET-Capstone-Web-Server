@@ -33,6 +33,7 @@ import datetime
 TIME_STR = "is no longer available. Please select again."
 
 
+
 """/* Description:
 ** This function is used to validate that the date received from the
 ** form's POST request is within the time range available for reserving a
@@ -48,11 +49,12 @@ TIME_STR = "is no longer available. Please select again."
 ** can then be easily accessed in the views.py file to display the error text.
 **
 */"""
-# Function that validates that the date is in the specified date range
 def validateDateRange(date):
     selectedDate = datetime.date.fromisoformat(str(date))
     start = datetime.date.today()
-    end = start + datetime.timedelta(days=7) # Adds 7 days to the start date
+    sevenDays = 7
+
+    end = start + datetime.timedelta(days = sevenDays) # Adds 7 days to the start date
 
     if selectedDate < start or selectedDate > end:
         raise ValidationError("This date is no longer available. Please select again.")
@@ -61,7 +63,7 @@ def validateDateRange(date):
 
 class ReservesForm(ModelForm):
     # The input_formats argument ensures date is in ISO format
-    date = forms.DateField(input_formats=['%Y-%m-%d'], validators=[validateDateRange])
+    date = forms.DateField(input_formats = ['%Y-%m-%d'], validators = [validateDateRange])
     
     class Meta:
         model = Reserves
@@ -74,7 +76,6 @@ class ReservesForm(ModelForm):
             "unixEndTime",
             "accessCode",
         ]
-
 
 
     """/* Description:
@@ -109,8 +110,10 @@ class ReservesForm(ModelForm):
                                     )
             
             testDict = availability.getDict()
+
             if int(unixStartTime) in testDict.keys():
                 if int(unixEndTime) not in testDict[unixStartTime]:
                     raise ValidationError("End time {}".format(TIME_STR))
+            
             else:
                 raise ValidationError("Start time {}".format(TIME_STR))
