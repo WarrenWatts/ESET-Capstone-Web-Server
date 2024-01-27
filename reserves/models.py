@@ -17,6 +17,15 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 
+
+"""/* Variable Naming Abbreviations Legend:
+**
+** str - string
+** regex - regular expression
+*/"""
+
+
+
 # Constants
 """/* Notes:
 ** The message sent back to the webpage when someone deliberately attempts to edit 
@@ -26,6 +35,7 @@ SUSPICIOUS_STR = "You edited the page code to try and submit something..."
 
 NAME_REGEX = r"^[A-za-z]{1,50}$"
 EMAIL_REGEX = r"^[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$"
+
 
 
 # Create your models here.

@@ -29,6 +29,16 @@ from email.mime.image import MIMEImage
 
 
 
+"""/* Variable Naming Abbreviations Legend:
+**
+** hndlr - handler
+** msg - message
+** dir - directory
+** img - image
+*/"""
+
+
+
 # Constants
 EMAIL_PNG = "Lock_Wizards_png.png"
 IMG_FILE_PATH = "reserves/templates/reserves/static/pictures/logo/Lock_Wizards_png.png"

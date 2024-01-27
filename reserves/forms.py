@@ -25,6 +25,14 @@ import datetime
 
 
 
+"""/* Variable Naming Abbreviations Legend:
+**
+** str - string
+** dict - dictionary
+*/"""
+
+
+
 # Constants
 """/* Notes:
 ** The message sent back to the webpage when a time that was available on the initial

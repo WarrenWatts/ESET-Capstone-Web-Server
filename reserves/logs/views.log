@@ -126,3 +126,7 @@
 2024-01-26 18:49:08,804 - CRITICAL - [Line: 106] - Invalid Data!
 2024-01-26 18:51:46,523 - CRITICAL - [Line: 106] - Imroper JSON Formatting!
 2024-01-26 19:29:45,384 - WARNING - [Line: 261] - User submission failed due to: ['Start time is no longer available. Please select again.']
+2024-01-27 15:05:05,499 - WARNING - [Line: 196] - Failed Entry!
+2024-01-27 15:05:12,129 - WARNING - [Line: 196] - Failed Entry!
+2024-01-27 15:10:18,650 - WARNING - [Line: 196] - Failed Entry!
+2024-01-27 15:32:21,449 - WARNING - [Line: 196] - Failed Entry!

@@ -18,10 +18,17 @@ from .models import Reserves
 
 
 
+"""/* Variable Naming Abbreviations Legend:
+**
+** rsv - reserve
+*/"""
+
+
+
 class AccessSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reserves
-        fields = ["accessCode"]
+        fields = ["accessCode", "date"]
 
 
 
