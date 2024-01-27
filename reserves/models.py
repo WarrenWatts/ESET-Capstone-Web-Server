@@ -19,3 +19,10 @@ class Reserves(models.Model):
     unixStartTime = models.IntegerField()
     unixEndTime = models.IntegerField()
     accessCode = models.IntegerField()
+
+    def __str__(self):
+        return "{} {} - {}".format(
+                                    self.date, 
+                                    self.unixStartTime, 
+                                    self.unixEndTime,
+                                )

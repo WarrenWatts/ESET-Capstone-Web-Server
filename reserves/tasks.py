@@ -8,8 +8,8 @@ from email.mime.image import MIMEImage
 
 
 
-EMAIL_PNG = 'Lock_Wizards_png.png'
-IMG_FILE_PATH = 'reserves/templates/reserves/static/pictures/logo/Lock_Wizards_png.png'
+EMAIL_PNG = "Lock_Wizards_png.png"
+IMG_FILE_PATH = "reserves/templates/reserves/static/pictures/logo/Lock_Wizards_png.png"
 EMAIL_TEMPLATE = "forms/email.html"
 MAIN_DIR = Path.cwd()
 
@@ -33,7 +33,7 @@ def emailHndlr(context, email):
     message.attach_alternative(htmlMsg, "text/html")
 
     # Opening the Lock_Wizards_png.png image and reading it as binary
-    with open(Path.joinpath(MAIN_DIR, IMG_FILE_PATH), 'rb') as imageFile:
+    with open(Path.joinpath(MAIN_DIR, IMG_FILE_PATH), "rb") as imageFile:
         img = MIMEImage(imageFile.read())
         img.add_header("Content-ID", "<{}>".format(EMAIL_PNG)) # Gives the image its CID
         img.add_header("Content-Disposition", "inline", filename = EMAIL_PNG) # How the image should be displayed in the body

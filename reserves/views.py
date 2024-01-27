@@ -1,9 +1,5 @@
 
 
-
-
-# TODO: If time allows near the end of the Capstone project, convert this into a Class-view based format.
-
 # Imports for Emails
 from .tasks import emailHndlr
 
@@ -240,11 +236,9 @@ def loadForm(request, msgString = ""):
 # View to check Form Page Submissions
 # NOTE: Emails are not asynchronous, if time in the future, add this feature!
 def checkSubmit(request):
-    formResponse = None
-
     if request.method == "POST":
         updatedRequest = request.POST.copy()
-        print(updatedRequest)
+
         if validateFormData(updatedRequest):
             return loadForm(request, listNew.append("Data missing from form, please try again."))
 
@@ -319,7 +313,6 @@ def uniqueAccessCode(updatedRequest):
 def validateFormData(updatedRequest):
     failureBool = False
     for i in FORM_FIELD_NAMES:
-        print("Here")
         if i not in updatedRequest.keys():
             failureBool = True
             break

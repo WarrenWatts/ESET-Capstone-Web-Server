@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-=o(2yqbpkf$z3=9e#y@k-@^qpk&@(k^n^(xhcmj3vbjz+m%qy8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["10.20.46.11"]
+ALLOWED_HOSTS = ['10.20.46.11']
 
 
 # Application definition
@@ -89,7 +89,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'reservation_db',
         'USER': 'root',
-        'PASSWORD': os.environ.get("MY_SQL_PASSWORD"),
+        'PASSWORD': os.environ.get('MY_SQL_PASSWORD'),
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
@@ -148,13 +148,13 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = "Lock Wizards Access Code"
-EMAIL_HOST_USER = os.environ.get("DJANGO_EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("DJANGO_EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = 'Lock Wizards Access Code'
+EMAIL_HOST_USER = os.environ.get('DJANGO_EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('DJANGO_EMAIL_HOST_PASSWORD')
 
 
-CELERY_BROKER_URL = "rediss://:p1d86a716dd47dad9adce3cea7988b823cff35eeb7d8159ab444c0281bce62019@ec2-34-194-144-236.compute-1.amazonaws.com:22209"
+CELERY_BROKER_URL = 'rediss://:p1d86a716dd47dad9adce3cea7988b823cff35eeb7d8159ab444c0281bce62019@ec2-34-194-144-236.compute-1.amazonaws.com:22209'
 
-CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_ACCEPT_CONTENT = ['json']
 
-CELERY_TASK_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = 'json'
