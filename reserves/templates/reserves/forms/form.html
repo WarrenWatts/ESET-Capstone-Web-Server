@@ -1,5 +1,8 @@
 {% load static %}
 <!DOCTYPE html>
+
+<!--Anything represented by {% %} is related to loading in Django data/information!-->
+
 <html lang="en">
     <head>
         <title>Lock Wizards Form Page</title>
@@ -38,6 +41,8 @@
                         <p class="required-text common-header-format">
                             Required *
                         </p>
+                        <!--Only activates if there is anything stored within myMessage!-->
+
                         {% if myMessage %}
                         <p class="db-error-text common-header-format">{{myMessage}}</p>
                         {% endif %}
@@ -59,6 +64,7 @@
                             </div>
                             <div class="input-group the-date-picker">
                                 <label for="datePicker">Date *</label>
+                                <!--Inline CSS used here since this is the only way to properly style this jQuery element!-->
                                 <input type="text" id="datePicker" name="date" style="background-color: #DFFAD4; border: 1px solid black; border-radius: 3px; padding: 4% 0% 4% 2%;" required>
                                 <span class="general-error" id="datePickerErr"><br></span>
                             </div>
@@ -84,6 +90,7 @@
                 </div>
             </form>
         </main>
+        <!--Date, Start Time, and End Time data!-->
         <script src="{% static 'scripts/form.js' %}" defer></script>
         {{myMembers|json_script}}
     </body>
