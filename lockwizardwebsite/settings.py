@@ -151,3 +151,10 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "Lock Wizards Access Code"
 EMAIL_HOST_USER = os.environ.get("DJANGO_EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("DJANGO_EMAIL_HOST_PASSWORD")
+
+
+CELERY_BROKER_URL = "rediss://:p1d86a716dd47dad9adce3cea7988b823cff35eeb7d8159ab444c0281bce62019@ec2-34-194-144-236.compute-1.amazonaws.com:22209"
+
+CELERY_ACCEPT_CONTENT = ["json"]
+
+CELERY_TASK_SERIALIZER = "json"

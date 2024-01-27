@@ -5,10 +5,7 @@
 # TODO: If time allows near the end of the Capstone project, convert this into a Class-view based format.
 
 # Imports for Emails
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
-from email.mime.image import MIMEImage
+from .tasks import emailHndlr
 
 # Imports for REST API
 from django.views.decorators.csrf import csrf_exempt
@@ -34,21 +31,28 @@ import logging
 
 
 # Constants
-EMAIL_PNG = 'Lock_Wizards_png.png'
-IMG_FILE_PATH = 'reserves/templates/reserves/static/pictures/logo/Lock_Wizards_png.png'
 FORM_SUBMIT_TEMPLATE = "reserves/forms/form_submit.html"
 FORM_TEMPLATE = "reserves/forms/form.html"
-EMAIL_TEMPLATE = "forms/email.html"
+
+THIRTY_MIN = 30
 
 STATUS_ZERO = 0
 STATUS_ONE = 1
 STATUS_TWO = 2
 
-
 MERIDIEM = {
     "Ante" : "A.M.",
     "Post" : "P.M.",
 }
+
+FORM_FIELD_NAMES = [
+    "firstName", 
+    "lastName", 
+    "email", 
+    "date", 
+    "unixStartTime", 
+    "unixEndTime",
+]
 
 RESPONSE_MSGS = {
     1 : "Successful Entry!",
@@ -63,32 +67,13 @@ RESPONSE_MSGS = {
 
 
 # Logging setup for views.py file
-mainDir = Path.cwd()
+MAIN_DIR = Path.cwd()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - [Line: %(lineno)d] - %(message)s')
-fileHandler = RotatingFileHandler(mainDir.joinpath('reserves/logs/views.log'))
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - [Line: %(lineno)d] - %(message)s")
+fileHandler = RotatingFileHandler(MAIN_DIR.joinpath("reserves/logs/views.log"))
 fileHandler.setFormatter(formatter)
 logger.addHandler(fileHandler)
-
-
-
-
-# Function to display human readable times in the email
-# NOTE: Only worrying about times between 6:00am through 11:00pm
-def readableTime(timeVal):
-    timeDate = datetime.datetime.fromtimestamp(timeVal)
-    thirtyStr = "30"
-    dblZeroStr = "00"
-
-    displayHour = timeDate.hour - 12 if (timeDate.hour > 12) else timeDate.hour
-
-    displayMinutes = thirtyStr if (timeDate.minute == 30) else dblZeroStr
-
-    displayMeridiem = MERIDIEM["Post"] if (timeDate.hour >= 12) else MERIDIEM["Ante"]
-    
-    return ("{}:{} {}".format(displayHour, displayMinutes, displayMeridiem))
-
 
 
 
@@ -98,6 +83,22 @@ def validateTimeRange(start, end):
 
     return True if (currentTimestamp >= start and currentTimestamp < end) else False
 
+
+# Function to display human readable times in the email
+# NOTE: Only worrying about times between 6:00am through 11:00pm
+def readableTime(timeVal):
+    timeDate = datetime.datetime.fromtimestamp(timeVal)
+    twelveHours = 12
+    thirtyStr = "30"
+    dblZeroStr = "00"
+
+    displayHour = timeDate.hour - twelveHours if (timeDate.hour > twelveHours) else timeDate.hour
+
+    displayMinutes = thirtyStr if (timeDate.minute == THIRTY_MIN) else dblZeroStr
+
+    displayMeridiem = MERIDIEM["Post"] if (timeDate.hour >= twelveHours) else MERIDIEM["Ante"]
+    
+    return ("{}:{} {}".format(displayHour, displayMinutes, displayMeridiem))
 
 
 
@@ -213,11 +214,13 @@ def accessCheckAPI(reservesData):
 def loadForm(request, msgString = ""):
     dateDict = dict()
     numDays = 7 # Number of calendar dates to search
+    addOneDay = 1
+    finalRsvHour = 22
 
     today = datetime.datetime.now()
 
     # If it's after the current day's last possible start time, set the first date to the next day
-    baseDate = (today.date() + datetime.timedelta(1) if (today.hour >= 22 and today.minute > 30) 
+    baseDate = (today.date() + datetime.timedelta(addOneDay) if (today.hour >= finalRsvHour and today.minute > THIRTY_MIN) 
                 else today.date())
     
     for x in range(numDays):
@@ -225,8 +228,8 @@ def loadForm(request, msgString = ""):
         dateDict.update({available.getDate() : available.getDict()})
     
     context = {
-        'myMembers' : dateDict,
-        'myMessage' : msgString,
+        "myMembers" : dateDict,
+        "myMessage" : msgString,
     }
 
     template = loader.get_template(FORM_TEMPLATE)
@@ -237,18 +240,29 @@ def loadForm(request, msgString = ""):
 # View to check Form Page Submissions
 # NOTE: Emails are not asynchronous, if time in the future, add this feature!
 def checkSubmit(request):
-    accessGenerator = SystemRandom()
+    formResponse = None
 
     if request.method == "POST":
         updatedRequest = request.POST.copy()
-        updatedRequest.update(uniqueAccessCode(updatedRequest))
+        print(updatedRequest)
+        if validateFormData(updatedRequest):
+            return loadForm(request, listNew.append("Data missing from form, please try again."))
 
+        updatedRequest.update(uniqueAccessCode(updatedRequest))
         form = ReservesForm(updatedRequest)
         
         if form.is_valid():
             form.save()
 
-            emailHndlr(form)
+            context = {
+                "firstName": form.cleaned_data["firstName"],
+                "accessCode": form.cleaned_data["accessCode"],
+                "unixStartTime": readableTime(form.cleaned_data["unixStartTime"]),
+                "unixEndTime": readableTime(form.cleaned_data["unixEndTime"]),
+                "date": form.cleaned_data["date"],
+            }
+            
+            emailHndlr.delay(context, form.cleaned_data["email"])
             template = loader.get_template(FORM_SUBMIT_TEMPLATE)
 
             return HttpResponse(template.render({}, request))
@@ -269,52 +283,45 @@ def checkSubmit(request):
     else:
         logger.warning("User submission failed due to improper HTTP request.")
         return loadForm(request, "Incorrect HTTP Request sent. Try again.")
-            
-
-
-def emailHndlr(formData):
-    context = {
-        "firstName": formData.cleaned_data['firstName'],
-        "accessCode": formData.cleaned_data['accessCode'],
-        "unixStartTime": readableTime(formData.cleaned_data['unixStartTime']),
-        "unixEndTime": readableTime(formData.cleaned_data['unixEndTime']),
-        "date": formData.cleaned_data['date'],
-    }
-
-    # Making the email.html file into a string and stripping it of the HTML tags
-    htmlMsg = render_to_string(EMAIL_TEMPLATE, context = context)
-    plainMsg = strip_tags(htmlMsg)
-
-    # Contents of the email
-    message = EmailMultiAlternatives(
-        subject = "Your Access Code",
-        body = plainMsg,
-        from_email = None,
-        to = [formData.cleaned_data['email']],
-    )
-
-    message.attach_alternative(htmlMsg, "text/html")
-
-    # Opening the Lock_Wizards_png.png image and reading it as binary
-    with open(Path.joinpath(mainDir, IMG_FILE_PATH), 'rb') as imageFile:
-        img = MIMEImage(imageFile.read())
-        img.add_header("Content-ID", "<{}>".format(EMAIL_PNG)) # Gives the image its CID
-        img.add_header("Content-Disposition", "inline", filename = EMAIL_PNG) # How the image should be displayed in the body
-    
-    message.attach(img)
-    message.send()
 
 
 
 def uniqueAccessCode(updatedRequest):
     accessGenerator = SystemRandom() # Used to generate an access code securely
+    btmOfRange = 1000000
+    topOfRange = 9999999
 
-    while(True): # This could be problematic if it breaks, so either think of a better way or test thoroughly!!!
-        newAccessCode = accessGenerator.randint(1000000, 9999999)
+    countToError = 0
+    errorReached = 34
+
+    newAccessCode = 0
+
+    while(True):
+        countToError = countToError + 1
+        newAccessCode = accessGenerator.randint(btmOfRange, topOfRange)
         
         codeFilter = (Reserves.objects.filter(accessCode = newAccessCode)
                         .filter(date = updatedRequest["date"])
                         .values_list("accessCode", named = True))
         
-        if not codeFilter:
-            return {"accessCode": newAccessCode}
+        if (not codeFilter):
+            break
+        
+        if countToError == errorReached:
+            logger.critical("Either a statistical impossibility just occurred, or your code it flawed...")
+
+            break
+    
+    return {"accessCode": newAccessCode}
+
+
+
+def validateFormData(updatedRequest):
+    failureBool = False
+    for i in FORM_FIELD_NAMES:
+        print("Here")
+        if i not in updatedRequest.keys():
+            failureBool = True
+            break
+    
+    return failureBool
