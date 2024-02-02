@@ -58,7 +58,7 @@ MAIN_DIR = Path.cwd()
 */"""
 @shared_task
 def emailHndlr(context, email):
-    htmlMsg = render_to_string(EMAIL_TEMPLATE, context = context)
+    htmlMsg = render_to_string(EMAIL_TEMPLATE, context=context)
     plainMsg = strip_tags(htmlMsg)
 
     # Contents of the email
