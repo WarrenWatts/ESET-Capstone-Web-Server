@@ -92,6 +92,9 @@ DATABASES = {
         'PASSWORD': os.environ.get('MY_SQL_PASSWORD'),
         'HOST': '127.0.0.1',
         'PORT': '3306',
+        'OPTIONS' : {
+            "init_command" : "SET GLOBAL max_connections = 1000",
+        }
     }
 }
 
