@@ -519,14 +519,16 @@ def vCheckSubmit(request):
             return HttpResponse(template.render({}, request))
         
         else:
-            listOfErrors = None
+            listOfErrors = list()
 
             for _, errors in form.errors.items():
-                listOfErrors = list(errors)
+                listOfErrors.append(errors)
+            
+            print(listOfErrors)
             logger.warning("User submission failed due to: {}".format(listOfErrors))
 
             try:
-                return vLoadForm(request, listOfErrors[0])
+                return vLoadForm(request, listOfErrors[0][0])
             except TypeError:
                 logger.critical("Program was unable to generate an access code.")
 

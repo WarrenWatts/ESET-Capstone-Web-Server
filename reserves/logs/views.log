@@ -131,3 +131,15 @@
 2024-01-27 15:10:18,650 - WARNING - [Line: 196] - Failed Entry!
 2024-01-27 15:32:21,449 - WARNING - [Line: 196] - Failed Entry!
 2024-02-02 17:27:57,446 - WARNING - [Line: 196] - Failed Entry!
+2024-02-06 10:48:32,873 - WARNING - [Line: 536] - User submission failed due to improper HTTP request.
+2024-02-06 10:48:40,459 - WARNING - [Line: 536] - User submission failed due to improper HTTP request.
+2024-02-06 11:12:51,987 - WARNING - [Line: 526] - User submission failed due to: <ul class="errorlist nonfield"><li>Start time is no longer available. Please select again.</li></ul>
+2024-02-06 11:15:33,845 - WARNING - [Line: 526] - User submission failed due to: <ul class="errorlist nonfield"><li>Start time is no longer available. Please select again.</li></ul>
+2024-02-06 11:16:19,136 - WARNING - [Line: 526] - User submission failed due to: <ul class="errorlist nonfield"><li>Start time is no longer available. Please select again.</li></ul>
+2024-02-06 11:16:37,775 - WARNING - [Line: 526] - User submission failed due to: <ul class="errorlist nonfield"><li>Start time is no longer available. Please select again.</li></ul>
+2024-02-06 11:18:15,846 - WARNING - [Line: 526] - User submission failed due to: [['Start time is no longer available. Please select again.']]
+2024-02-06 11:18:40,647 - WARNING - [Line: 526] - User submission failed due to: [['Start time is no longer available. Please select again.']]
+2024-02-06 11:20:06,214 - WARNING - [Line: 528] - User submission failed due to: [['Start time is no longer available. Please select again.']]
+2024-02-06 11:22:44,336 - WARNING - [Line: 528] - User submission failed due to: [['Start time is no longer available. Please select again.']]
+2024-02-06 11:26:36,520 - WARNING - [Line: 528] - User submission failed due to: [['Start time is no longer available. Please select again.']]
+2024-02-06 11:30:51,201 - WARNING - [Line: 528] - User submission failed due to: [['Start time is no longer available. Please select again.'], ['Ensure this value is less than or equal to 2147483647.']]
