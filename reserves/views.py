@@ -272,7 +272,6 @@ def hRsvNameAPI(reservesData):
 ** A JSON data structure is returned as the response to the HTTP request. This response varies based
 ** on the id value and the occurrence/event encountered.
 */"""
-# REST API that is used to check the validity of access code
 def hAccessCheckAPI(reservesData):
     accessSerialized = AccessSerializer(data = reservesData)
 
@@ -489,7 +488,8 @@ def vLoadForm(request, msgString = ""):
 ** Notes:
 ** Even if there are multiple errors that occur, only the first one will be displayed upon reloading the form page.
 */"""
-# View to check Form Page Submissions
+
+# NOTE: NEEDS REFACTORING!!!
 def vCheckSubmit(request):
     if request.method == "POST":
         updatedRequest = request.POST.copy()
