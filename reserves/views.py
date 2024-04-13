@@ -89,14 +89,22 @@ FORM_FIELD_NAMES = [
 ]
 
 # Reponses to REST API POST requests
+"""/* Notes:
+** Changed to numbers later on to account for
+** usage in embedded devices with little change
+** to other portions of the code. Can't really make
+** an Enum, but also want to streamline numbering here,
+** so this will do for now...
+*/"""
 RESPONSE_MSGS = {
-    1 : "Successful Entry!",
-    2 : "Failed Entry!",
-    3 : "Imroper JSON Formatting!",
-    4 : "Invalid URL!",
-    5 : "Invalid HTTP Request!",
-    6 : "Invalid Data!",
-    7 : "No Reservation!",
+    1 : 1, #"Successful Entry!",
+    2 : 2, #"Failed Entry!",
+    3 : 3, #"Imroper JSON Formatting!",
+    4 : 4, #"Invalid URL!",
+    5 : 5, #"Invalid HTTP Request!",
+    6 : 6, #"Invalid Data!",
+    7 : 7, #"No Reservation!",
+    8 : 8, #"Something is very Wrong!",
 }
 
 
@@ -186,7 +194,13 @@ def hReadableTime(timeVal):
 ** to a security risk/breach or major flaw in the code.
 */"""
 def hResponseMsgHndlr(statusCode, msg):
-    responseMsgVal = {"Response" : msg}
+    responseMsgVal = None
+
+    if isinstance(msg, dict):
+        msg.update({"responseCode": RESPONSE_MSGS[1]})
+        responseMsgVal = msg
+    else:
+        responseMsgVal = {"responseCode" : msg}
 
     match statusCode:
         case 0:
@@ -200,7 +214,7 @@ def hResponseMsgHndlr(statusCode, msg):
         
         case _:
             logger.critical("Something is very Wrong!")
-            responseMsgVal = {"Response" : "Something is very Wrong!"}
+            responseMsgVal = {"responseCode" : RESPONSE_MSGS[8]}
 
     return responseMsgVal
 
@@ -224,7 +238,7 @@ def hResponseMsgHndlr(statusCode, msg):
 ** Notes:
 ** If there isn't a reservation made for the current time, a message stating as much will be returned.
 */"""
-def hRsvNameAPI(reservesData):
+def hRsvNameAPI(reservesData, dataDict):
     rsvNameSerialized = RsvNameSerializer(data = reservesData)
 
     responseVal = None
@@ -232,25 +246,28 @@ def hRsvNameAPI(reservesData):
     if rsvNameSerialized.is_valid():
         currentRsvInfo = (Reserves.objects.filter(unixStartTime__lte = rsvNameSerialized.data["unixStartTime"])
                         .filter(unixEndTime__gt = rsvNameSerialized.data["unixStartTime"])
-                        .values_list("firstName", "lastName", "unixStartTime", "unixEndTime", named = True))
+                        .values_list("firstName", "unixStartTime", "unixEndTime", named = True))
         
         if currentRsvInfo:
+
             responseDict = {
                 "firstName" : currentRsvInfo[0].firstName,
-                "lastName" : currentRsvInfo[0].lastName,
                 "unixStartTime" : currentRsvInfo[0].unixStartTime,
                 "unixEndTime" : currentRsvInfo[0].unixEndTime,
             }
+            dataDict.update(responseDict)
 
-            responseVal = JsonResponse(data = hResponseMsgHndlr(STATUS_ZERO, responseDict))
+            responseVal = JsonResponse(data = hResponseMsgHndlr(STATUS_ZERO, dataDict))
 
         # If reservation doesn't exist
         else:
-            responseVal = JsonResponse(data = hResponseMsgHndlr(STATUS_ZERO, RESPONSE_MSGS[7]))
+            dataDict.update(hResponseMsgHndlr(STATUS_ZERO, RESPONSE_MSGS[7]))
+            responseVal = JsonResponse(data = dataDict)
 
     # If data sent is invalid
     else:
-        responseVal = JsonResponse(data = hResponseMsgHndlr(STATUS_TWO, RESPONSE_MSGS[6]))
+        dataDict.update(hResponseMsgHndlr(STATUS_TWO, RESPONSE_MSGS[6]))
+        responseVal = JsonResponse(data = dataDict)
     
     return responseVal
 
@@ -272,7 +289,7 @@ def hRsvNameAPI(reservesData):
 ** A JSON data structure is returned as the response to the HTTP request. This response varies based
 ** on the id value and the occurrence/event encountered.
 */"""
-def hAccessCheckAPI(reservesData):
+def hAccessCheckAPI(reservesData, dataDict):
     accessSerialized = AccessSerializer(data = reservesData)
 
     responseVal = None
@@ -284,7 +301,8 @@ def hAccessCheckAPI(reservesData):
         
         try:
             if (hValidateTimeRange(codeTimes[0].unixStartTime, codeTimes[0].unixEndTime)):
-                responseVal = JsonResponse(data = hResponseMsgHndlr(STATUS_ZERO, RESPONSE_MSGS[1]))
+                dataDict.update(hResponseMsgHndlr(STATUS_ZERO, RESPONSE_MSGS[1]))
+                responseVal = JsonResponse(data = dataDict)
 
             # If access code exists for date but is used at the wrong time
             else:
@@ -292,11 +310,13 @@ def hAccessCheckAPI(reservesData):
         
         # If access code doesn't exist
         except IndexError:
-            responseVal = JsonResponse(data = hResponseMsgHndlr(STATUS_ONE, RESPONSE_MSGS[2]))
+            dataDict.update(hResponseMsgHndlr(STATUS_ONE, RESPONSE_MSGS[2]))
+            responseVal = JsonResponse(data = dataDict)
     
     # If data sent is invalid
     else:
-        responseVal = JsonResponse(data = hResponseMsgHndlr(STATUS_TWO, RESPONSE_MSGS[6]))
+        dataDict.update(hResponseMsgHndlr(STATUS_TWO, RESPONSE_MSGS[6]))
+        responseVal = JsonResponse(data = dataDict)
 
     return responseVal
 
@@ -400,30 +420,42 @@ def hValidateFormData(updatedRequest):
 def rHttpReqHndlrAPI(request, id):
     jsonResponseVal = None
 
+    urlPaths = {
+    "time" : 0,
+    "reserve" : 1,
+    "value" : 2
+    }
+
+    dataDict = {"id": urlPaths.get(id)}
+
     try:
         reservesData = JSONParser().parse(request)
+
     except ParseError:
-        return JsonResponse(data = hResponseMsgHndlr(STATUS_TWO, RESPONSE_MSGS[3]))
+        dataDict.update(hResponseMsgHndlr(STATUS_TWO, RESPONSE_MSGS[3]))
+        return JsonResponse(data = dataDict)
 
     if request.method == "POST":
         match id:
             case "value":
-                jsonResponseVal = hAccessCheckAPI(reservesData)
+                jsonResponseVal = hAccessCheckAPI(reservesData, dataDict)
 
             case "reserve":
-                jsonResponseVal = hRsvNameAPI(reservesData)
+                jsonResponseVal = hRsvNameAPI(reservesData, dataDict)
             
             case "time":
-                jsonResponseVal = JsonResponse(data = hResponseMsgHndlr(
-                                                        STATUS_ZERO, int(datetime.datetime.now().timestamp()) ))
+                dataDict.update({"serverTime": int(datetime.datetime.now().timestamp())})
+                jsonResponseVal = JsonResponse(data = hResponseMsgHndlr(STATUS_ZERO, dataDict))
             
             # If URL is incorrect (shouldn't actually be able to get here since URLs are handled in urls.py)
             case _:
-                jsonResponseVal = JsonResponse(data = hResponseMsgHndlr(STATUS_TWO, RESPONSE_MSGS[4]))
+                dataDict.update(hResponseMsgHndlr(STATUS_TWO, RESPONSE_MSGS[4]))
+                jsonResponseVal = JsonResponse(data = dataDict)
     
     # If not a POST request
-    else: 
-        jsonResponseVal = JsonResponse(data = hResponseMsgHndlr(STATUS_TWO, RESPONSE_MSGS[5]))
+    else:
+        dataDict.update(hResponseMsgHndlr(STATUS_TWO, RESPONSE_MSGS[5]))
+        jsonResponseVal = JsonResponse(data = dataDict)
     
     return jsonResponseVal
 
@@ -493,7 +525,7 @@ def vLoadForm(request, msgString = ""):
 def vCheckSubmit(request):
     if request.method == "POST":
         updatedRequest = request.POST.copy()
-
+        
         # Verify that all form input data exists
         if hValidateFormData(updatedRequest):
             return vLoadForm(request, "Data missing from form, please try again.")
@@ -524,7 +556,6 @@ def vCheckSubmit(request):
             for _, errors in form.errors.items():
                 listOfErrors.append(errors)
             
-            print(listOfErrors)
             logger.warning("User submission failed due to: {}".format(listOfErrors))
 
             try:
