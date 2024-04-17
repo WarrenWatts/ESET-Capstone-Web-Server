@@ -296,7 +296,7 @@ def hAccessCheckAPI(reservesData, dataDict):
     
     if accessSerialized.is_valid():
         codeTimes = (Reserves.objects.filter(accessCode = accessSerialized.data["accessCode"])
-                        .filter(date = accessSerialized.data["date"])
+                        .filter(date = datetime.datetime.today().strftime('%Y-%m-%d'))
                         .values_list("unixStartTime", "unixEndTime", named = True))
         
         try:

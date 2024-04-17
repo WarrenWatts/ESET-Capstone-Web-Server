@@ -28,7 +28,7 @@ from .models import Reserves
 class AccessSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reserves
-        fields = ["accessCode", "date"]
+        fields = ["accessCode"]
 
 
 
